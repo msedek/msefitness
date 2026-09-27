@@ -33,6 +33,6 @@ export default defineConfig({
       },
     }),
   ],
-  server: { port: 5190, proxy: { '/api': 'http://localhost:3991' } },
+  server: { port: Number(process.env.VITE_PORT ?? 5190), proxy: { '/api': `http://localhost:${process.env.API_PORT ?? 3991}` } },
   build: { outDir: 'dist', emptyOutDir: true },
 });
