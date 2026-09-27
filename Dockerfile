@@ -1,13 +1,16 @@
 # syntax=docker/dockerfile:1
-FROM node:24-slim AS build
+# better-sqlite3 se compila (no hay prebuild para todas las versiones de Node 24).
+FROM node:24-slim AS toolchain
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
+
+FROM toolchain AS build
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:24-slim AS deps
-WORKDIR /app
+FROM toolchain AS deps
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
