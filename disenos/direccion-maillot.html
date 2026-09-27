@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<title>msefitness — Maillot</title>
+<link rel="stylesheet" href="fonts/bigshoulders.css">
+<link rel="stylesheet" href="fonts/barlowsc.css">
+<style>
+:root{
+  --yellow:#FFDD00; --green:#00A650; --green-d:#00813E; --red:#E3141B;
+  --ink:#111111; --asphalt:#1B1B1B; --tarmac:#2A2A2A; --line:#3A3A3A;
+  --white:#FFFFFF; --paper:#F2F2EE; --grey:#8C8C88;
+  --disp:'Big Shoulders Display', 'Arial Narrow', sans-serif;
+  --body:'Barlow Semi Condensed', 'Arial Narrow', sans-serif;
+  --dots: radial-gradient(circle, var(--red) 0 5px, transparent 5.6px) 0 0/22px 22px,
+          radial-gradient(circle, var(--red) 0 5px, transparent 5.6px) 11px 11px/22px 22px, var(--white);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--asphalt);color:var(--white);font-family:var(--body);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+
+/* ---------- lámina ---------- */
+.tricolor{height:14px;display:grid;grid-template-columns:1fr 1fr 1fr}
+.tricolor i:nth-child(1){background:var(--green)}
+.tricolor i:nth-child(2){background:var(--dots);background-size:14px 14px, 14px 14px;background-position:0 0,7px 7px}
+.tricolor i:nth-child(3){background:var(--yellow)}
+.head{max-width:1720px;margin:0 auto;padding:44px 40px 30px;display:grid;grid-template-columns:1.25fr 1fr;gap:40px;align-items:end}
+.head .kicker{font:italic 700 15px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--yellow)}
+.head h1{font:900 168px/.8 var(--disp);text-transform:uppercase;letter-spacing:-.01em;margin:14px 0 12px}
+.head h1 span{color:var(--yellow)}
+.head p.concept{font:500 22px/1.3 var(--body);max-width:640px;color:#DADAD4}
+.head p.concept b{color:var(--white);font-weight:800}
+.spec{display:grid;gap:14px}
+.swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.sw{height:86px;padding:8px;display:flex;align-items:flex-end;font:700 12px/1.1 var(--body);text-transform:uppercase;letter-spacing:.06em}
+.sw.g{background:var(--green)} .sw.d{background:var(--dots);color:var(--ink)} .sw.d span{background:var(--white);padding:2px 4px;margin:-2px -4px} .sw.y{background:var(--yellow);color:var(--ink)}
+.sw.k{background:var(--ink);outline:1px solid var(--line)} .sw.w{background:var(--paper);color:var(--ink)}
+.types{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.types div{border-top:3px solid var(--white);padding-top:8px}
+.types .a{font:900 54px/.9 var(--disp);text-transform:uppercase}
+.types .b{font:600 17px/1.25 var(--body)}
+.types small{display:block;font:italic 700 12px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--grey);margin-top:8px}
+
+.board{max-width:2200px;margin:0 auto;padding:10px 40px 70px;display:flex;flex-wrap:wrap;row-gap:50px;gap:30px;justify-content:center;align-items:flex-start}
+.phone{width:390px;flex:none;border-radius:46px;border:11px solid #050505;box-shadow:0 0 0 2px #3a3a3a;overflow:hidden;position:relative;background:var(--paper);color:var(--ink);display:flex;flex-direction:column;min-height:866px}
+.caption{font:italic 700 13px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--grey);margin:0 0 12px 14px}
+.col{display:flex;flex-direction:column}
+.status{height:44px;background:var(--ink);color:var(--white);display:flex;justify-content:space-between;align-items:center;padding:0 26px;font:700 15px var(--body)}
+.status .bat{width:26px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative}
+.status .bat:after{content:"";position:absolute;inset:1px 5px 1px 1px;background:currentColor}
+.scr{flex:1;display:flex;flex-direction:column}
+
+/* tab bar */
+.tabs{margin-top:auto;padding-bottom:env(safe-area-inset-bottom);display:grid;grid-template-columns:1fr 1fr 1.2fr 1fr 1fr;background:var(--ink);color:var(--white);height:74px;border-top:4px solid var(--yellow)}
+.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:800 11px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:#9a9a96;text-decoration:none}
+.tabs a svg{width:22px;height:22px}
+.tabs a.on{color:var(--white)}
+.tabs a.on:before{content:"";display:block;width:26px;height:4px;background:var(--yellow);margin-top:-12px;margin-bottom:6px}
+.tabs a.plus{background:var(--yellow);color:var(--ink)}
+.tabs a.plus b{font:900 30px/.8 var(--disp)}
+
+/* shared bits */
+.kick{font:italic 700 12px/1 var(--body);letter-spacing:.14em;text-transform:uppercase}
+.disp{font-family:var(--disp);font-weight:900;text-transform:uppercase;line-height:.82}
+.row{display:flex;align-items:baseline;gap:8px}
+.jersey{display:block}
+
+/* ============ PANTALLA 1: INICIO ============ */
+.s1 .band{background:var(--dots);padding:0 18px 16px;color:var(--ink);position:relative}
+.s1 .band .top{display:flex;justify-content:space-between;align-items:center;padding-top:14px}
+.chip{background:var(--ink);color:var(--white);font:800 12px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;padding:7px 9px}
+.bib{background:var(--white);border:3px solid var(--ink);width:112px;padding:6px 8px 4px;text-align:center;position:relative}
+.bib:before,.bib:after{content:"";position:absolute;top:6px;width:7px;height:7px;border-radius:50%;background:var(--grey);box-shadow:0 0 0 1.5px var(--ink) inset}
+.bib:before{left:6px}.bib:after{right:6px}
+.bib small{display:block;font:800 10px/1 var(--body);letter-spacing:.16em}
+.bib b{display:block;font:900 58px/.86 var(--disp)}
+.bib em{display:block;font:italic 700 10px/1 var(--body);letter-spacing:.1em;border-top:2px solid var(--ink);padding-top:3px;margin-top:2px}
+.s1 .hello{display:flex;justify-content:space-between;align-items:flex-end;margin-top:14px}
+.s1 .hello h2{font:900 64px/.8 var(--disp);text-transform:uppercase;background:var(--white);padding:6px 8px 2px;box-shadow:4px 4px 0 var(--ink)}
+.s1 .week{padding:18px 18px 14px;background:var(--paper)}
+.s1 .week .big{display:flex;align-items:flex-end;gap:12px;margin-top:22px}
+.s1 .week .big b{font:900 124px/.76 var(--disp)}
+.s1 .week .big span{font:800 17px/1.05 var(--body);text-transform:uppercase;padding-bottom:4px}
+.segs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:14px}
+.segs i{height:16px;background:var(--ink);position:relative}
+.segs i:after{content:attr(data-d);position:absolute;top:21px;left:0;font:700 11px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:#555}
+.s1 .rest{margin-top:30px;font:600 15px/1.3 var(--body);display:flex;gap:10px;align-items:center}
+.s1 .rest i{flex:0 0 10px;height:10px;background:var(--green)}
+.s1 .last{background:var(--ink);color:var(--white);padding:16px 18px 18px}
+.s1 .last .kick{color:var(--yellow)}
+.s1 .last .num{display:flex;align-items:flex-end;justify-content:space-between;margin-top:8px}
+.s1 .last .num b{font:900 92px/.78 var(--disp)}
+.s1 .last .num span{font:800 14px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:#bbb;display:block;margin-top:6px}
+.stamp{background:var(--yellow);color:var(--ink);font:900 30px/.85 var(--disp);text-transform:uppercase;padding:8px 10px 5px;transform:rotate(-4deg);text-align:center}
+.stamp small{display:block;font:800 10px/1.1 var(--body);letter-spacing:.12em}
+.rail{position:relative;height:30px;margin-top:16px}
+.rail .track{position:absolute;left:0;right:0;top:12px;height:6px;background:var(--tarmac)}
+.rail .fill{position:absolute;left:0;top:12px;height:6px;background:var(--yellow)}
+.rail .flag{position:absolute;top:0;width:18px;height:30px;transform:translateX(-50%);background:
+  conic-gradient(var(--white) 25%,var(--ink) 0 50%,var(--white) 0 75%,var(--ink) 0) 0 0/9px 9px;border:1.5px solid var(--white)}
+.rail .lbl{position:absolute;top:34px;font:700 11px/1 var(--body);letter-spacing:.08em;color:#aaa;transform:translateX(-50%);white-space:nowrap}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);margin-top:28px;border-top:1px solid var(--line)}
+.trio div{padding-top:10px}
+.trio div+div{border-left:1px solid var(--line);padding-left:12px}
+.trio b{font:900 36px/.85 var(--disp)}
+.trio small{display:block;font:700 11px/1.1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:#aaa;margin-top:4px}
+.z3{color:var(--ink);background:var(--green);padding:0 4px;font:800 11px/1.5 var(--body);display:inline-block;margin-left:2px;color:#fff}
+.s1 .streak{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--paper)}
+.s1 .streak .j{display:flex;gap:4px}
+.s1 .streak p{font:800 15px/1.05 var(--body);text-transform:uppercase}
+.s1 .streak p b{font:900 34px/.8 var(--disp);display:block}
+.cta{text-decoration:none;display:flex;align-items:center;justify-content:space-between;background:var(--yellow);color:var(--ink);margin:0 18px 16px;padding:14px 16px;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink)}
+.cta b{font:900 34px/.82 var(--disp);text-transform:uppercase}
+.cta small{display:block;font:italic 700 12px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.cta svg{width:34px;height:34px}
+
+/* ============ PANTALLA 2: REGISTRAR ============ */
+.s2{background:var(--white)}
+.s2 .hdr{background:var(--ink);color:var(--white);padding:4px 18px 16px;border-bottom:8px solid var(--yellow)}
+.s2 .hdr .kick{color:var(--yellow)}
+.s2 .hdr h2{font:900 58px/.82 var(--disp);text-transform:uppercase;margin-top:8px}
+.s2 .hdr p{font:600 15px/1.2 var(--body);color:#bbb;margin-top:6px}
+.field{display:grid;grid-template-columns:1fr auto;align-items:center;padding:14px 18px 12px;border-bottom:2px solid var(--ink)}
+.field .lab{font:800 13px/1 var(--body);letter-spacing:.12em;text-transform:uppercase}
+.field .lab small{display:block;font:500 12px/1.2 var(--body);letter-spacing:0;text-transform:none;color:#666;margin-top:4px}
+.field .val{display:flex;align-items:center;gap:6px}
+.field output{font:900 72px/.8 var(--disp);min-width:120px;text-align:right;display:inline-block}
+.field .unit{font:800 13px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;width:34px;align-self:flex-end;padding-bottom:6px}
+.step{display:grid;gap:4px}
+.step button{width:44px;height:36px;background:var(--ink);color:var(--white);font:900 26px/1 var(--disp)}
+.step button:active{background:var(--yellow);color:var(--ink)}
+.live{margin:14px 18px 0;background:var(--green);color:var(--white);padding:14px 14px 12px;position:relative}
+.live .kick{color:#cff5dd}
+.live .l1{display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px}
+.live .l1 b{font:900 64px/.8 var(--disp)}
+.live .l1 b small{display:block;font:800 13px/1 var(--body);letter-spacing:.1em;margin-top:6px}
+.live .pct{font:900 40px/.8 var(--disp);text-align:right}
+.live .pct small{display:block;font:700 11px/1.1 var(--body);letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+.zones{display:grid;grid-template-columns:60fr 10fr 10fr 10fr 10fr;margin-top:14px;height:12px;position:relative;gap:2px}
+.zones i{background:rgba(255,255,255,.3)} .zones i.on{background:var(--white)}
+.zones .mk{position:absolute;top:-6px;width:4px;height:24px;background:var(--yellow);transform:translateX(-50%);box-shadow:0 0 0 2px var(--ink)}
+.zlab{display:grid;grid-template-columns:60fr 10fr 10fr 10fr 10fr;font:700 10px/1 var(--body);letter-spacing:.06em;margin-top:6px;color:#cff5dd;gap:2px}
+.live .note{font:600 14px/1.25 var(--body);margin-top:10px}
+.live.warn{background:var(--red)}
+.opt{margin:14px 18px 0;border:2px dashed #999;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.opt b{font:800 13px/1 var(--body);letter-spacing:.12em;text-transform:uppercase}
+.opt span{font:500 13px/1 var(--body);color:#666}
+.save{margin:14px 18px 16px;background:var(--ink);color:var(--white);display:flex;align-items:stretch;height:64px}
+.save b{flex:1;display:flex;align-items:center;padding-left:16px;font:900 32px/.8 var(--disp);text-transform:uppercase}
+.save i{width:54px;background:conic-gradient(var(--white) 25%,var(--ink) 0 50%,var(--white) 0 75%,var(--ink) 0) 0 0/16px 16px}
+
+/* ============ PANTALLA 3: PROGRESO ============ */
+.s3{background:var(--ink);color:var(--white)}
+.s3 .hdr{padding:4px 18px 14px}
+.s3 .hdr .kick{color:var(--yellow)}
+.s3 .hdr h2{font:900 70px/.8 var(--disp);text-transform:uppercase;margin-top:8px}
+.s3 .hdr p{font:600 14px/1.2 var(--body);color:#aaa;margin-top:6px}
+.blk{padding:14px 18px;border-top:1px solid var(--line)}
+.blk h3{font:800 13px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:baseline}
+.blk h3 em{font-style:italic;color:#999;font-weight:700;letter-spacing:.08em}
+.blk svg.chart{display:block;width:100%;margin-top:10px;overflow:visible}
+.legend{display:flex;gap:12px;margin-top:8px;font:700 11px/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:#aaa}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px}
+.eff{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;background:var(--yellow);color:var(--ink);margin:0;padding:14px 18px}
+.eff b{font:900 84px/.78 var(--disp)}
+.eff p{font:800 14px/1.15 var(--body);text-transform:uppercase}
+.eff p small{display:block;font:600 13px/1.25 var(--body);text-transform:none;margin-top:4px}
+.cal{display:grid;grid-template-columns:18px repeat(7,1fr);gap:4px;margin-top:10px;font:700 10px/1 var(--body);color:#888;text-align:center}
+.cal i{aspect-ratio:1.5/1;background:var(--tarmac)}
+.cal i.a{background:#555}.cal i.b{background:#9ed9b6}.cal i.c{background:var(--green)}.cal i.d{background:var(--yellow)}
+.cal span{align-self:center}
+.km{display:flex;align-items:flex-end;justify-content:space-between}
+.km b{font:900 58px/.8 var(--disp)}
+.km b small{font:800 13px/1 var(--body);letter-spacing:.1em}
+.gc{width:100%;border-collapse:collapse;margin-top:10px;font:600 14px/1 var(--body)}
+.gc th{font:800 10px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:#999;text-align:left;padding:0 0 6px}
+.gc td{padding:9px 0;border-top:1px solid var(--line);vertical-align:middle}
+.gc td.pos{font:900 32px/.8 var(--disp);width:34px;color:var(--yellow)}
+.gc td.n{font:900 24px/.9 var(--disp);text-transform:uppercase}
+.gc td.n small{display:block;font:600 11px/1.2 var(--body);text-transform:none;color:#aaa;letter-spacing:0}
+.gc td.r{text-align:right;font:900 24px/.9 var(--disp)}
+.gc .mj{width:26px;height:22px;display:inline-block}
+
+/* ============ PANTALLA 4: PLAN ============ */
+.s4{background:var(--paper)}
+.s4 .hdr{padding:4px 18px 14px}
+.s4 .hdr h2{font:900 70px/.8 var(--disp);text-transform:uppercase;margin-top:8px}
+.s4 .hdr .kick{color:var(--red)}
+.rack{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 18px}
+.plan{border:2px solid var(--ink);background:var(--white);padding:8px 6px 8px;text-align:center;position:relative}
+.plan svg{width:84px;height:72px;margin:0 auto}
+.plan h4{font:900 22px/.85 var(--disp);text-transform:uppercase;margin-top:4px}
+.plan .m{font:900 30px/.85 var(--disp);margin-top:6px}
+.plan .m small{display:block;font:700 10px/1.1 var(--body);letter-spacing:.08em;text-transform:uppercase}
+.plan ul{list-style:none;font:600 12px/1.3 var(--body);margin-top:6px;border-top:1px solid #ccc;padding-top:6px}
+.plan.cur{background:var(--ink);color:var(--white);border-color:var(--ink);box-shadow:0 0 0 3px var(--paper),0 0 0 6px var(--red)}
+.plan.cur ul{border-color:#444}
+.plan .tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);white-space:nowrap;font:800 10px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;padding:5px 7px;background:var(--red);color:var(--white)}
+.plan .tag.top{background:var(--ink);color:var(--yellow)}
+.verdict{margin:22px 0 0;background:var(--yellow);padding:16px 18px 18px;position:relative;overflow:hidden}
+.verdict:before{content:"";position:absolute;right:-30px;top:-40px;width:180px;height:180px;border-radius:50%;border:26px solid rgba(0,0,0,.07)}
+.verdict .kick{position:relative}
+.verdict h3{font:900 64px/.8 var(--disp);text-transform:uppercase;margin-top:8px;position:relative}
+.verdict p.lead{font:600 15px/1.3 var(--body);margin-top:8px;max-width:320px}
+.why{list-style:none;margin-top:12px;border-top:3px solid var(--ink)}
+.why li{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(0,0,0,.25)}
+.why li i{width:22px;height:22px;background:var(--ink);color:var(--yellow);display:grid;place-items:center;font:900 16px/1 var(--disp);font-style:normal}
+.why li p{font:700 14px/1.15 var(--body)}
+.why li p small{display:block;font:500 12px/1.2 var(--body);color:#333}
+.why li b{font:900 26px/.85 var(--disp);text-align:right}
+.ten{display:flex;gap:2px;margin-top:4px}
+.ten u{width:14px;height:10px;background:var(--ink);display:block}
+.ten u.x{background:transparent;box-shadow:inset 0 0 0 1.5px var(--ink)}
+.change{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--ink);margin-top:12px;border:2px solid var(--ink)}
+.change div{background:var(--yellow);padding:7px 6px}
+.change small{display:block;font:700 10px/1 var(--body);letter-spacing:.1em;text-transform:uppercase}
+.change b{font:900 22px/.95 var(--disp)}
+.change s{color:#555;font-weight:700;font-size:14px}
+.acts{display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px}
+.acts .go{background:var(--ink);color:var(--yellow);font:900 30px/.8 var(--disp);text-transform:uppercase;padding:14px 12px 11px;text-align:left;display:flex;justify-content:space-between;align-items:center}
+.acts .no{font:700 14px/1 var(--body);text-decoration:underline;text-underline-offset:3px;text-align:left;padding:4px 0}
+.rule{padding:14px 18px 16px;font:500 13px/1.3 var(--body);color:#444;display:grid;grid-template-columns:auto 1fr;gap:10px}
+.rule b{color:var(--ink)}
+.rule i{width:12px;height:12px;background:var(--red);margin-top:3px}
+
+
+/* ============ PANTALLA 5: QUEMA DE GRASA ============ */
+.s5{background:var(--white)}
+.s5 .hdr{background:var(--green);color:var(--white);padding:4px 18px 14px}
+.s5 .hdr .status{margin:0 -18px;padding:0 26px}
+.s5 .hdr .kick{color:#d4f7e2;margin-top:4px}
+.s5 .hdr h2{font:900 64px/.8 var(--disp);text-transform:uppercase;margin-top:8px}
+.s5 .hdr p{font:600 14px/1.25 var(--body);margin-top:8px;max-width:330px}
+.climbs{padding:12px 18px 4px}
+.climb{display:grid;grid-template-columns:1fr auto;align-items:end;gap:4px 10px;padding:9px 0 10px;border-bottom:2px solid var(--ink)}
+.climb h4{font:900 24px/.85 var(--disp);text-transform:uppercase}
+.climb h4 small{display:block;font:italic 700 11px/1 var(--body);letter-spacing:.1em;color:#666;margin-bottom:3px}
+.climb .cat{font:900 15px/1 var(--disp);text-transform:uppercase;background:var(--ink);color:var(--white);padding:4px 6px 3px;text-align:center}
+.climb .cat b{display:block;font-size:22px}
+.climb svg{grid-column:1/-1;width:100%;height:44px;display:block}
+.climb .meta{grid-column:1/-1;font:600 12px/1.2 var(--body);color:#444;display:flex;justify-content:space-between}
+.climb.cur{background:linear-gradient(var(--paper),var(--paper));margin:0 -18px;padding:9px 18px 10px}
+.climb.cur h4 small{color:var(--red)}
+.zkey{display:flex;gap:10px;font:700 10px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:#555;padding:8px 18px 0}
+.zkey i{display:inline-block;width:10px;height:10px;margin-right:4px;vertical-align:-1px;border:1px solid var(--ink)}
+.guide{margin:12px 0 0;background:var(--ink);color:var(--white);padding:14px 18px 16px}
+.guide .gtop{display:flex;justify-content:space-between;align-items:center}
+.guide .gtop .kick{color:var(--yellow)}
+.guide .gtop span{font:800 12px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:#aaa}
+.guide .now{display:grid;grid-template-columns:1fr auto;align-items:end;margin-top:10px}
+.guide .now h3{font:900 44px/.82 var(--disp);text-transform:uppercase;color:var(--yellow)}
+.guide .now h3 small{display:block;font:700 13px/1.1 var(--body);letter-spacing:.06em;color:var(--white);text-transform:none;margin-top:6px}
+.guide .clock{font:900 88px/.78 var(--disp);text-align:right}
+.guide .clock small{display:block;font:700 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-top:4px}
+.hr{margin-top:14px;position:relative;height:46px}
+.hr .scale{position:absolute;left:0;right:0;top:16px;height:14px;background:var(--tarmac)}
+.hr .band{position:absolute;top:16px;height:14px;background:var(--yellow)}
+.hr .pin{position:absolute;top:0;transform:translateX(-50%);text-align:center}
+.hr .pin b{display:block;font:900 20px/.9 var(--disp);background:var(--white);color:var(--ink);padding:2px 5px 0}
+.hr .pin i{display:block;width:3px;height:22px;background:var(--white);margin:0 auto}
+.hr .t{position:absolute;top:34px;font:700 11px/1 var(--body);color:#aaa;transform:translateX(-50%)}
+.guide .ok{font:700 14px/1.2 var(--body);margin-top:6px;color:#bff0d2}
+.prog{display:grid;gap:2px;margin-top:12px;align-items:end;height:30px}
+.prog i{display:block}
+.guide .next{display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font:600 14px/1.2 var(--body)}
+.guide .next b{font:900 20px/1 var(--disp);text-transform:uppercase}
+.guide .next em{font-style:normal;color:#aaa;font-size:12px;display:block}
+.weight{padding:14px 18px 16px}
+.weight .wtop{margin-top:14px;display:flex;justify-content:space-between;align-items:flex-end}
+.weight .wtop b{font:900 72px/.78 var(--disp)}
+.weight .wtop b small{font:800 16px/1 var(--body);letter-spacing:.06em;margin-left:4px}
+.weight .wtop p{font:800 13px/1.15 var(--body);letter-spacing:.06em;text-transform:uppercase;text-align:right}
+.weight .wtop p span{display:block;font:600 13px/1.2 var(--body);text-transform:none;letter-spacing:0;color:#555}
+.weight svg{width:100%;display:block;margin-top:10px;overflow:visible}
+.weight .fine{font:500 12.5px/1.3 var(--body);color:#444;margin-top:10px;border-left:4px solid var(--red);padding-left:8px}
+
+/* ---------- responsive: teléfono real ---------- */
+@media (max-width:1760px){ .board{flex-wrap:wrap} }
+@media (max-width:900px){
+  .head{grid-template-columns:1fr}
+  .head h1{font-size:120px}
+}
+@media (max-width:600px){
+  .head{padding:28px 16px 20px;gap:22px}
+  .head h1{font-size:92px}
+  .head p.concept{font-size:18px}
+  .swatches .sw{height:64px;font-size:10px}
+  .types .a{font-size:40px}
+  .board{padding:0;gap:0;display:block}
+  .col{display:block}
+  .caption{margin:0;padding:14px 16px 10px;background:var(--asphalt);border-top:14px solid var(--asphalt)}
+  .phone{width:100%;border:0;border-radius:0;box-shadow:none;min-height:0}
+  .status{display:none}
+  .s1 .band,.s2 .hdr,.s3 .hdr,.s4 .hdr{padding-top:14px}
+}
+</style>
+</head>
+<body>
+
+<div class="tricolor"><i></i><i></i><i></i></div>
+
+<header class="head">
+  <div>
+    <div class="kick">msefitness · dirección de diseño · Maillot</div>
+    <h1>Cada nivel<br>es un <span>maillot</span></h1>
+    <p class="concept">Tu entrenamiento es una gran vuelta: cada sesión es una <b>etapa</b>, cada plan es un <b>maillot</b>. Verde para empezar, lunares para el plan medio, <b>amarillo</b> para el tope de 10.000 pasos. Subir de nivel no es un ajuste: es ganarte la camiseta.</p>
+  </div>
+  <div class="spec">
+    <div class="swatches">
+      <div class="sw g">Verde<br>Principiante</div>
+      <div class="sw d"><span>Lunares<br>Medio</span></div>
+      <div class="sw y">Amarillo<br>Avanzado</div>
+      <div class="sw k">Asfalto</div>
+      <div class="sw w">Papel</div>
+    </div>
+    <div class="types">
+      <div><div class="a">7.200 etapa</div><small>Big Shoulders Display 900</small></div>
+      <div><div class="b">Pulso a la baja, kilómetros al alza: el corazón rinde más por cada latido.</div><small>Barlow Semi Condensed</small></div>
+    </div>
+  </div>
+</header>
+
+<main class="board">
+
+<!-- ======================= 1. INICIO ======================= -->
+<section class="col">
+  <div class="caption">Inicio · hoy</div>
+  <div class="phone s1">
+    <div class="band">
+      <div class="status" style="margin:0 -18px;padding:0 26px"><span>10:24</span><span class="bat"></span></div>
+      <div class="top">
+        <span class="chip">Maillot de lunares · plan medio</span>
+      </div>
+      <div class="hello">
+        <h2>Tomás</h2>
+        <div class="bib"><small>MSEFITNESS</small><b>25</b><em>PRÓX. ETAPA</em></div>
+      </div>
+    </div>
+
+    <div class="week">
+      <div class="kick">Semana 21 – 27 sep</div>
+      <div class="big"><b>4/4</b><span>etapas<br>corridas.<br>Semana cerrada.</span></div>
+      <div class="segs">
+        <i data-d="lun 21"></i><i data-d="mié 23"></i><i data-d="vie 25"></i><i data-d="sáb 26"></i>
+      </div>
+      <div class="rest"><i></i><span>Hoy domingo toca descanso. Próxima etapa: <b>lunes 28</b>.</span></div>
+    </div>
+
+    <div class="last">
+      <div class="kick">Última etapa · sáb 26 sep</div>
+      <div class="num">
+        <div><b>7.200</b><span>pasos equivalentes</span></div>
+        <div class="stamp">103 %<small>meta cruzada</small></div>
+      </div>
+      <div class="rail">
+        <div class="track"></div>
+        <div class="fill" style="width:100%"></div>
+        <div class="flag" style="left:97.1%"></div>
+        <div class="lbl" style="left:12%">0</div>
+        <div class="lbl" style="left:86%">meta 7.000</div>
+      </div>
+      <div class="trio">
+        <div><b>45</b><small>minutos</small></div>
+        <div><b>16,0</b><small>km</small></div>
+        <div><b>136</b><small>lpm <span class="z3">Z3</span></small></div>
+      </div>
+      <p style="font:600 13px/1 var(--body);color:#aaa;margin-top:12px">≈ 627 kcal · estimado (Keytel)</p>
+    </div>
+
+    <div class="streak">
+      <p><b>6 semanas</b>seguidas cumpliendo el plan</p>
+      <div class="j" id="streakJ"></div>
+    </div>
+
+    <a class="cta" href="#">
+      <div><small>Lun 28 sep · meta 7.000 pasos eq</small><b>Registrar etapa 25</b></div>
+      <svg viewBox="0 0 34 34"><path d="M4 17h24M19 7l10 10-10 10" stroke="#111" stroke-width="4.5" fill="none" stroke-linecap="square"/></svg>
+    </a>
+
+    <nav class="tabs" data-on="0"></nav>
+  </div>
+</section>
+
+<!-- ======================= 2. REGISTRAR ======================= -->
+<section class="col">
+  <div class="caption">Registrar sesión · en vivo</div>
+  <div class="phone s2">
+    <div class="hdr">
+      <div class="status" style="margin:0 -18px;padding:0 26px"><span>10:26</span><span class="bat"></span></div>
+      <div class="kick">Hoja de ruta · dom 27 sep</div>
+      <h2>Etapa 25</h2>
+      <p>Tres datos y listo. Toca un número para escribirlo o usa los botones.</p>
+    </div>
+
+    <div class="field">
+      <div class="lab">Tiempo<small>lo que marcó la bici</small></div>
+      <div class="val"><output id="vT">42</output><span class="unit">min</span>
+        <div class="step"><button data-k="t" data-d="1">+</button><button data-k="t" data-d="-1">−</button></div></div>
+    </div>
+    <div class="field">
+      <div class="lab">Distancia<small>de la pantalla de la bici</small></div>
+      <div class="val"><output id="vD">14,8</output><span class="unit">km</span>
+        <div class="step"><button data-k="d" data-d="0.1">+</button><button data-k="d" data-d="-0.1">−</button></div></div>
+    </div>
+    <div class="field">
+      <div class="lab">Pulso prom.<small>promedio de la sesión</small></div>
+      <div class="val"><output id="vF">138</output><span class="unit">lpm</span>
+        <div class="step"><button data-k="f" data-d="1">+</button><button data-k="f" data-d="-1">−</button></div></div>
+    </div>
+
+    <div class="live" id="live">
+      <div class="kick">Así va tu etapa</div>
+      <div class="l1">
+        <b id="lS">6.720<small>PASOS EQ</small></b>
+        <div class="pct"><span id="lP">96 %</span><small>de la meta 7.000</small></div>
+      </div>
+      <div class="zones" id="zb"><i></i><i></i><i class="on"></i><i></i><i></i><span class="mk" id="zm"></span></div>
+      <div class="zlab"><span>Z1 · &lt;60 %</span><span>Z2</span><span>Z3</span><span>Z4</span><span>Z5</span></div>
+      <p class="note" id="lN">Z3 · 79 % de tu FCmáx (174). Zona justa del plan medio. 21,1 km/h · 2,55 m por latido.</p>
+    </div>
+
+    <div class="opt"><b>+ Más datos</b><span>pulso máx · esfuerzo 1–10 · nota</span></div>
+
+    <button class="save"><b>Guardar etapa</b><i></i></button>
+
+    <nav class="tabs" data-on="2"></nav>
+  </div>
+</section>
+
+<!-- ======================= 3. PROGRESO ======================= -->
+<section class="col">
+  <div class="caption">Progreso · la general</div>
+  <div class="phone s3">
+    <div class="status"><span>10:27</span><span class="bat"></span></div>
+    <div class="hdr">
+      <div class="kick">24 etapas · 17 ago – 26 sep</div>
+      <h2>La general</h2>
+      <p>297,1 km recorridos. El pulso baja, la meta se cruza más seguido.</p>
+    </div>
+
+    <div class="blk">
+      <h3>Pasos eq por etapa <em>meta 7.000</em></h3>
+      <svg class="chart" id="cSteps" viewBox="0 0 354 132"></svg>
+      <div class="legend"><span><i style="background:var(--yellow)"></i>≥100 %</span><span><i style="background:var(--green)"></i>90–99 %</span><span><i style="background:#555"></i>&lt;90 %</span></div>
+    </div>
+
+    <div class="blk">
+      <h3>Perfil del pulso <em>lpm promedio</em></h3>
+      <svg class="chart" id="cHr" viewBox="0 0 354 118"></svg>
+    </div>
+
+    <div class="eff">
+      <b>+20 %</b>
+      <p>Eficiencia cardíaca<small>De 2,17 a 2,61 metros por latido. Más kilómetros con el mismo corazón.</small></p>
+    </div>
+
+    <div class="blk">
+      <h3>Constancia <em>6 de 6 semanas</em></h3>
+      <div class="cal" id="cal"></div>
+    </div>
+
+    <div class="blk">
+      <h3>Clasificación de la casa <em>% meta · últimas 3</em></h3>
+      <table class="gc">
+        <tr><th></th><th>Corredor</th><th>Maillot</th><th style="text-align:right">Meta</th></tr>
+        <tr><td class="pos">1</td><td class="n">Ana<small>3/3 esta semana · racha 3 sem.</small></td><td><svg class="mj" data-j="g" viewBox="0 0 120 104"></svg></td><td class="r">101 %</td></tr>
+        <tr><td class="pos">2</td><td class="n">Tomás<small>4/4 esta semana · racha 6 sem.</small></td><td><svg class="mj" data-j="p" viewBox="0 0 120 104"></svg></td><td class="r">98 %</td></tr>
+      </table>
+    </div>
+
+    <nav class="tabs" data-on="1"></nav>
+  </div>
+</section>
+
+<!-- ======================= 4. PLAN Y NIVEL ======================= -->
+<section class="col">
+  <div class="caption">Plan y nivel · sugerencia</div>
+  <div class="phone s4">
+    <div class="status"><span>10:28</span><span class="bat"></span></div>
+    <div class="hdr">
+      <div class="kick">Tus maillots</div>
+      <h2>Plan y nivel</h2>
+    </div>
+
+    <div class="rack">
+      <div class="plan">
+        <svg data-j="g" viewBox="0 0 120 104"></svg>
+        <h4>Principiante</h4>
+        <div class="m">4.000<small>pasos eq</small></div>
+        <ul><li>3 ses./sem.</li><li>25–35 min</li><li>Z2 · 60–70 %</li></ul>
+      </div>
+      <div class="plan cur">
+        <span class="tag">Lo llevas</span>
+        <svg data-j="p" viewBox="0 0 120 104"></svg>
+        <h4>Medio</h4>
+        <div class="m">7.000<small>pasos eq</small></div>
+        <ul><li>4 ses./sem.</li><li>40–50 min</li><li>Z3 · 70–80 %</li></ul>
+      </div>
+      <div class="plan">
+        <span class="tag top">Tope</span>
+        <svg data-j="y" viewBox="0 0 120 104"></svg>
+        <h4>Avanzado</h4>
+        <div class="m">10.000<small>pasos eq</small></div>
+        <ul><li>5 ses./sem.</li><li>55–65 min</li><li>Z3 + tramos Z4</li></ul>
+      </div>
+    </div>
+
+    <div class="verdict">
+      <div class="kick">Análisis de tus últimas 10 etapas</div>
+      <h3>El amarillo<br>te espera</h3>
+      <p class="lead">Estás listo para el plan Avanzado. Así lo leemos en tus datos:</p>
+      <ul class="why">
+        <li><i>✓</i><p>Meta casi siempre cruzada<small>≥90 % en 7 de las últimas 10</small><span class="ten"><u class="x"></u><u class="x"></u><u class="x"></u><u></u><u></u><u></u><u></u><u></u><u></u><u></u></span></p><b>7/10</b></li>
+        <li><i>✓</i><p>Pulso promedio a la baja<small>de 146 a 136 lpm en 6 semanas</small></p><b>−10</b></li>
+        <li><i>✓</i><p>Eficiencia al alza<small>de 2,17 a 2,61 metros por latido</small></p><b>+20 %</b></li>
+      </ul>
+      <div class="change">
+        <div><small>Meta</small><b>10.000</b> <s>7.000</s></div>
+        <div><small>Semana</small><b>5 ses.</b> <s>4</s></div>
+        <div><small>Duración</small><b>55–65′</b></div>
+      </div>
+      <div class="acts">
+        <button class="go">Ponerme el amarillo <span>→</span></button>
+        <button class="no">Todavía no, sigo con lunares</button>
+      </div>
+    </div>
+
+    <div class="rule"><i></i><p><b>Y si cuesta:</b> si quedas bajo el 60 % en 3 de 5 etapas, o tu pulso pasa el 85 % de la FCmáx 3 veces seguidas, te sugerimos volver al maillot anterior. Tú decides siempre.</p></div>
+
+    <nav class="tabs" data-on="3"></nav>
+  </div>
+</section>
+
+<!-- ======================= 5. QUEMA DE GRASA ======================= -->
+<section class="col">
+  <div class="caption">Quema de grasa · puertos de montaña</div>
+  <div class="phone s5">
+    <div class="hdr">
+      <div class="status"><span>10:31</span><span class="bat"></span></div>
+      <div class="kick">Programa guiado · 3 puertos</div>
+      <h2>Quema<br>de grasa</h2>
+      <p>Cada sesión es un puerto: la forma de la subida es la forma de tu pulso. El verde (Z2) es donde la grasa pone más energía.</p>
+    </div>
+
+    <div class="zkey"><span><i style="background:#cfcfca"></i>Z1</span><span><i style="background:var(--green)"></i>Z2 quema</span><span><i style="background:var(--yellow)"></i>Z3 alto</span><span><i style="background:var(--red)"></i>Z4</span></div>
+
+    <div class="climbs">
+      <div class="climb">
+        <h4><small>Iniciante</small>Base quemadora</h4>
+        <div class="cat">4ª<b>cat.</b></div>
+        <svg data-prof="ini" viewBox="0 0 354 44" preserveAspectRatio="none"></svg>
+        <div class="meta"><span>30 min · 3 por semana</span><span>5′ Z1 · 20′ Z2 · 5′ Z1</span></div>
+      </div>
+      <div class="climb cur">
+        <h4><small>Tu nivel · 5 de 8 sesiones</small>Oleadas</h4>
+        <div class="cat" style="background:var(--red)">2ª<b>cat.</b></div>
+        <svg data-prof="med" viewBox="0 0 354 44" preserveAspectRatio="none"></svg>
+        <div class="meta"><span>38 min · 4 por semana</span><span>3 × (5′ Z2 + 3′ Z3 alto)</span></div>
+      </div>
+      <div class="climb" style="border-bottom:0">
+        <h4><small>Avanzado</small>Intervalos + fondo</h4>
+        <div class="cat" style="background:var(--yellow);color:var(--ink)">Fuera de<b>cat.</b></div>
+        <svg data-prof="adv" viewBox="0 0 354 44" preserveAspectRatio="none"></svg>
+        <div class="meta"><span>45 min · 4 por semana, nunca 2 días de intervalos seguidos</span></div>
+      </div>
+    </div>
+
+    <div class="guide">
+      <div class="gtop"><div class="kick">En carrera · Oleadas</div><span>Bloque 3 de 9</span></div>
+      <div class="now">
+        <h3>Z3 alto<small>Sube resistencia y sostén.</small></h3>
+        <div class="clock">1:48<small>quedan del bloque</small></div>
+      </div>
+      <div class="hr" id="hrg"></div>
+      <p class="ok">134 lpm · dentro del rango. Así se va. <span style="color:#aaa">Al terminar ≈ 466 kcal (estimado).</span></p>
+      <div class="prog" id="gprog"></div>
+      <div class="next"><div><em>Después</em><b>5′ Z2 · 104–122 lpm</b></div><div style="text-align:right"><em>Transcurrido</em><b>11:12 / 38:00</b></div></div>
+    </div>
+
+    <div class="weight">
+      <div class="kick">Peso · 17 ago – 27 sep</div>
+      <div class="wtop">
+        <b>−2,4<small>KG</small></b>
+        <p>En 6 semanas<span>de 91,4 a 89,0 kg</span></p>
+      </div>
+      <svg id="wchart" viewBox="0 0 354 124"></svg>
+      <p class="fine">Lo que baja el peso es el déficit calórico: la bici suma, la comida decide. Las calorías por sesión son una <b>estimación</b> (Keytel 2005: pulso, edad, peso y sexo).</p>
+    </div>
+
+    <nav class="tabs" data-on="4"></nav>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ---------- datos (SPEC) ---------- */
+const S=[["2026-08-17",30,9.5,146,4800],["2026-08-19",31,9.9,149,4960],["2026-08-21",31,9.9,145,4960],["2026-08-22",34,10.9,145,5440],
+["2026-08-24",32,10.4,144,5120],["2026-08-26",33,10.7,147,5280],["2026-08-28",33,10.8,143,5280],["2026-08-29",34,11.2,143,5440],
+["2026-08-31",37,12.2,143,5920],["2026-09-02",29,9.6,145,4640],["2026-09-04",36,12.0,142,5760],["2026-09-05",36,12.1,141,5760],
+["2026-09-07",37,12.5,141,5920],["2026-09-09",39,13.2,143,6240],["2026-09-11",38,13.0,140,6080],["2026-09-12",38,13.0,139,6080],
+["2026-09-14",39,13.4,139,6240],["2026-09-16",40,13.8,142,6400],["2026-09-18",42,14.6,138,6720],["2026-09-19",41,14.3,138,6560],
+["2026-09-21",41,14.4,137,6560],["2026-09-23",42,14.8,140,6720],["2026-09-25",42,14.9,136,6720],["2026-09-26",45,16.0,136,7200]];
+const fmt=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const dec=(n,d=1)=>n.toFixed(d).replace('.',',');
+
+/* ---------- maillots ---------- */
+const J='M34 8 L48 3 Q60 14 72 3 L86 8 L116 32 L102 52 L90 42 L90 100 L30 100 L30 42 L18 52 L4 32 Z';
+function jersey(el,k){
+  const id='p'+Math.random().toString(36).slice(2,7);
+  let fill={g:'#00A650',y:'#FFDD00',p:`url(#${id})`}[k];
+  el.innerHTML=`<defs><pattern id="${id}" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#fff"/><circle cx="4" cy="4" r="3.6" fill="#E3141B"/><circle cx="12" cy="12" r="3.6" fill="#E3141B"/></pattern></defs>
+  <path d="${J}" fill="${fill}" stroke="#111" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M48 3 Q60 14 72 3" fill="none" stroke="#111" stroke-width="4"/>
+  ${k==='y'?'<rect x="30" y="58" width="60" height="7" fill="#111"/>':''}${k==='g'?'<rect x="30" y="58" width="60" height="7" fill="#fff"/>':''}`;
+}
+document.querySelectorAll('svg[data-j]').forEach(s=>jersey(s,s.dataset.j));
+const sj=document.getElementById('streakJ');
+for(let i=0;i<6;i++){sj.insertAdjacentHTML('beforeend','<svg width="24" height="22" viewBox="0 0 120 104" data-j="p"></svg>');}
+sj.querySelectorAll('svg').forEach(s=>jersey(s,'p'));
+
+/* ---------- tab bar ---------- */
+const ic={
+ home:'<svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z" fill="currentColor"/></svg>',
+ prog:'<svg viewBox="0 0 24 24"><path d="M3 20h4v-7H3zm7 0h4V8h-4zm7 0h4V4h-4z" fill="currentColor"/></svg>',
+ burn:'<svg viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3 0-4-1-6 1-9z" fill="currentColor"/></svg>',
+ plan:'<svg viewBox="0 0 120 104"><path d="'+J+'" fill="currentColor"/></svg>'};
+document.querySelectorAll('.tabs').forEach(n=>{
+  const on=+n.dataset.on;
+  n.innerHTML=`<a class="${on==0?'on':''}" href="#">${ic.home}Inicio</a><a class="${on==1?'on':''}" href="#">${ic.prog}General</a><a class="plus" href="#"><b>+</b>Etapa</a><a class="${on==4?'on':''}" href="#">${ic.burn}Quema</a><a class="${on==3?'on':''}" href="#">${ic.plan}Maillot</a>`;
+});
+
+/* ---------- gráfico pasos eq ---------- */
+(function(){
+  const W=354,H=132,top=8,bot=112,max=8000,bw=W/S.length;
+  const y=v=>bot-(v/max)*(bot-top);
+  let g='';
+  S.forEach((s,i)=>{
+    const p=s[4]/7000, c=p>=1?'#FFDD00':p>=.9?'#00A650':'#555';
+    g+=`<rect x="${(i*bw+1.5).toFixed(1)}" y="${y(s[4]).toFixed(1)}" width="${(bw-3).toFixed(1)}" height="${(bot-y(s[4])).toFixed(1)}" fill="${c}"/>`;
+  });
+  g+=`<line x1="0" x2="${W}" y1="${y(7000)}" y2="${y(7000)}" stroke="#E3141B" stroke-width="2.5" stroke-dasharray="7 4"/>`;
+  g+=`<text x="0" y="${y(7000)-6}" fill="#fff" font-family="Big Shoulders Display" font-weight="900" font-size="15">META 7.000</text>`;
+  g+=`<text x="${W}" y="${y(7200)-6}" fill="#FFDD00" text-anchor="end" font-family="Big Shoulders Display" font-weight="900" font-size="15">7.200</text>`;
+  g+=`<text x="0" y="${y(4800)-5}" fill="#aaa" font-family="Big Shoulders Display" font-weight="900" font-size="14">4.800</text>`;
+  const lab=[[0,'17 ago'],[8,'31 ago'],[16,'14 sep'],[23,'26 sep']];
+  lab.forEach(([i,t])=>g+=`<text x="${i*bw+(i==23?bw:0)}" y="${H-2}" fill="#999" font-family="Barlow Semi Condensed" font-weight="700" font-size="11" text-anchor="${i==23?'end':'start'}">${t.toUpperCase()}</text>`);
+  document.getElementById('cSteps').innerHTML=g;
+})();
+
+/* ---------- perfil de etapa del pulso ---------- */
+(function(){
+  const W=354,top=22,bot=92,lo=130,hi=152;
+  const x=i=>i*(W/(S.length-1)), y=v=>bot-(v-lo)/(hi-lo)*(bot-top);
+  let pts=S.map((s,i)=>[x(i),y(s[3])]);
+  let path='M0 '+bot+' '+pts.map(p=>`L${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ')+` L${W} ${bot} Z`;
+  // bandas tipo perfil de etapa por tramos (semanas)
+  let g=`<defs><clipPath id="hc"><path d="${path}"/></clipPath></defs>`;
+  // cada tramo coloreado por la zona de esa sesión (FCmáx 174): Z4 rojo, Z3 verde
+  S.forEach((s,i)=>{ if(i==S.length-1) return; const z4=s[3]/174>=.8; const x0=x(i),x1=x(i+1);
+    g+=`<rect clip-path="url(#hc)" x="${x0.toFixed(1)}" y="0" width="${(x1-x0+.6).toFixed(1)}" height="${bot}" fill="${z4?'#E3141B':'#00A650'}"/>`; });
+  g+=`<path d="${'M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L')}" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>`;
+  for(let w=1;w<6;w++){ g+=`<line x1="${x(w*4)}" x2="${x(w*4)}" y1="${top-8}" y2="${bot}" stroke="#111" stroke-width="1.5"/>`; }
+  g+=`<line x1="0" x2="${W}" y1="${bot}" y2="${bot}" stroke="#fff" stroke-width="2"/>`;
+  // anotaciones
+  g+=`<text x="${x(1)}" y="${y(149)-7}" fill="#fff" font-family="Big Shoulders Display" font-weight="900" font-size="16" text-anchor="middle">149</text>`;
+  g+=`<text x="${W}" y="${top-10}" fill="#FFDD00" font-family="Big Shoulders Display" font-weight="900" font-size="16" text-anchor="end">ÚLTIMA: 136 LPM</text>`;
+  const wk=['S1','S2','S3','S4','S5','S6'];
+  wk.forEach((t,w)=>g+=`<text x="${(x(w*4)+x(Math.min(w*4+4,23)))/2}" y="${bot+15}" fill="#999" font-family="Barlow Semi Condensed" font-weight="700" font-size="11" text-anchor="middle">${t}</text>`);
+  g+=`<text x="0" y="${bot+30}" fill="#bbb" font-family="Barlow Semi Condensed" font-weight="600" font-size="12">Rojo = etapa en Z4 (≥80 % FCmáx) · verde = Z3, la zona del plan</text>`;
+  const el=document.getElementById('cHr'); el.setAttribute('viewBox','0 0 354 126'); el.innerHTML=g;
+})();
+
+/* ---------- calendario de constancia ---------- */
+(function(){
+  const c=document.getElementById('cal'); let h='<span></span>'+['L','M','M','J','V','S','D'].map(d=>`<span>${d}</span>`).join('');
+  const start=new Date('2026-08-17T12:00');
+  const map={}; S.forEach(s=>map[s[0]]=s[4]/7000);
+  for(let w=0;w<6;w++){ h+=`<span>S${w+1}</span>`;
+    for(let d=0;d<7;d++){ const t=new Date(start); t.setDate(t.getDate()+w*7+d);
+      const k=t.toISOString().slice(0,10); const p=map[k];
+      const cl=p===undefined?'':p>=1?'d':p>=.9?'c':p>=.8?'b':'a'; h+=`<i class="${cl}" title="${k}"></i>`; } }
+  c.innerHTML=h;
+  c.insertAdjacentHTML('afterend','<div class="legend"><span><i style="background:#555"></i>&lt;80 %</span><span><i style="background:#9ed9b6"></i>80–89</span><span><i style="background:var(--green)"></i>90–99</span><span><i style="background:var(--yellow)"></i>≥100</span></div>');
+})();
+
+/* ---------- registro en vivo ---------- */
+(function(){
+  const v={t:42,d:14.8,f:138}, FCMAX=174, META=7000;
+  function draw(){
+    document.getElementById('vT').textContent=v.t;
+    document.getElementById('vD').textContent=dec(v.d);
+    document.getElementById('vF').textContent=v.f;
+    const p=v.f/FCMAX, z=p<.6?1:p<.7?2:p<.8?3:p<.9?4:5, f=p<.6?100:p<.7?130:160, st=v.t*f, pc=Math.round(st/META*100);
+    document.getElementById('lS').innerHTML=fmt(st)+'<small>PASOS EQ</small>';
+    document.getElementById('lP').textContent=pc+' %';
+    document.querySelectorAll('#zb i').forEach((e,i)=>e.classList.toggle('on',i==z-1));
+    // posición: escala 0–100 % FCmáx comprimida como el grid (60|10|10|10|10)
+    const pos=Math.min(Math.max(p*100,0),100);
+    document.getElementById('zm').style.left=pos+'%';
+    const msg={1:'Muy suave para tu plan.',2:'Suave: sube un poco la resistencia.',3:'Zona justa del plan medio.',4:'Sobre la zona del plan: cuida el ritmo.',5:'Muy alto: baja la intensidad.'}[z];
+    document.getElementById('lN').textContent=`Z${z} · ${Math.round(p*100)} % de tu FCmáx (174). ${msg} ${dec(v.d/v.t*60)} km/h · ${dec(v.d*1000/(v.f*v.t),2)} m por latido.`;
+    document.getElementById('live').classList.toggle('warn',p>=.85);
+  }
+  document.querySelectorAll('.step button').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.k; v[k]=Math.max(0,Math.round((v[k]+ +b.dataset.d)*10)/10); draw(); });
+  draw();
+})();
+
+/* ---------- quema de grasa ---------- */
+const ZC={1:'#cfcfca',2:'#00A650',3:'#FFDD00',4:'#E3141B'};
+const PROF={
+  ini:[[5,1],[20,2],[5,1]],
+  med:[[5,1],[5,2],[3,3],[5,2],[3,3],[5,2],[3,3],[4,2],[5,1]],
+  adv:[[8,1]].concat(...Array(6).fill([[2,4],[2,2]])).concat([[8,2],[5,1]])
+};
+function profile(el,blocks,total=45){
+  const W=354,H=44,sx=W/total; let x=0,g='';
+  blocks.forEach(([m,z])=>{const h=z*10+2; g+=`<rect x="${(x*sx).toFixed(2)}" y="${H-h}" width="${(m*sx).toFixed(2)}" height="${h}" fill="${ZC[z]}" stroke="#111" stroke-width="1.2"/>`; x+=m;});
+  g+=`<line x1="0" x2="${W}" y1="${H-.5}" y2="${H-.5}" stroke="#111" stroke-width="2"/>`;
+  el.innerHTML=g;
+}
+document.querySelectorAll('svg[data-prof]').forEach(s=>profile(s,PROF[s.dataset.prof]));
+(function(){ // modo guiado
+  const g=document.getElementById('gprog'), b=PROF.med; g.style.gridTemplateColumns=b.map(x=>x[0]+'fr').join(' ');
+  g.innerHTML=b.map(([m,z],i)=>`<i style="height:${z*7+4}px;background:${ZC[z]};opacity:${i<2?.35:1};${i==2?'box-shadow:0 0 0 2px #fff':''}"></i>`).join('');
+  // escala 100–150 lpm, rango Z3 122–139, pulso 134
+  const lo=100,hi=150,pc=v=>((v-lo)/(hi-lo)*100)+'%';
+  document.getElementById('hrg').innerHTML=`<div class="scale"></div><div class="band" style="left:${pc(122)};width:calc(${pc(139)} - ${pc(122)})"></div>
+   <div class="pin" style="left:${pc(134)}"><b>134</b><i></i></div>
+   <span class="t" style="left:${pc(122)}">122</span><span class="t" style="left:${pc(139)}">139 lpm</span>`;
+})();
+(function(){ // peso
+  const W=[['17 ago',91.4],['24 ago',91.0],['31 ago',90.5],['07 sep',90.3],['14 sep',89.6],['21 sep',89.3],['27 sep',89.0]];
+  const w=354,top=16,bot=100,lo=88.7,hi=91.6,x=i=>i*(w/(W.length-1)),y=v=>top+(hi-v)/(hi-lo)*(bot-top);
+  const ma=W.map((p,i)=>{const s=W.slice(Math.max(0,i-2),i+1);return s.reduce((a,b)=>a+b[1],0)/s.length});
+  let g='';
+  [90,91].forEach(v=>g+=`<line x1="0" x2="${w}" y1="${y(v)}" y2="${y(v)}" stroke="#ddd"/><text x="0" y="${y(v)+12}" font-family="Barlow Semi Condensed" font-weight="700" font-size="10" fill="#888">${v} kg</text>`);
+  g+=`<path d="M${ma.map((v,i)=>x(i).toFixed(1)+' '+y(v).toFixed(1)).join(' L')}" fill="none" stroke="#00A650" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>`;
+  g+=`<path d="M${W.map((p,i)=>x(i).toFixed(1)+' '+y(p[1]).toFixed(1)).join(' L')}" fill="none" stroke="#111" stroke-width="2"/>`;
+  W.forEach((p,i)=>{g+=`<rect x="${x(i)-4}" y="${y(p[1])-4}" width="8" height="8" fill="${i==W.length-1?'#FFDD00':'#fff'}" stroke="#111" stroke-width="2"/>`;
+    g+=`<text x="${x(i)}" y="${bot+18}" text-anchor="${i==0?'start':i==W.length-1?'end':'middle'}" font-family="Barlow Semi Condensed" font-weight="700" font-size="10.5" fill="#666">${p[0].toUpperCase()}</text>`;});
+  g+=`<text x="${x(0)+10}" y="${y(91.4)-7}" font-family="Big Shoulders Display" font-weight="900" font-size="16" fill="#111">91,4</text>`;
+  g+=`<text x="${w-8}" y="${y(89.0)-8}" text-anchor="end" font-family="Big Shoulders Display" font-weight="900" font-size="16" fill="#111">89,0</text>`;
+  g+=`<g font-family="Barlow Semi Condensed" font-weight="700" font-size="10.5" fill="#555"><rect x="${w-120}" y="${top-8}" width="14" height="4" fill="#00A650"/><text x="${w-102}" y="${top-4}">MEDIA 3 SEM.</text></g>`;
+  document.getElementById('wchart').innerHTML=g;
+})();
+</script>
+</body>
+</html>

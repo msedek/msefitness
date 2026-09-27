@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tablero — msefitness</title>
+<link rel="stylesheet" href="fonts/saira.css">
+<link rel="stylesheet" href="fonts/michroma.css">
+<style>
+:root{
+  --void:#070809; --graphite:#0e0f11; --panel:#141619; --bezel:#1d2024; --rim:#2a2e33;
+  --tick:#5d6168; --dim:#3a3e44; --ink:#ece6d8; --ink2:#a9a498;
+  --amber:#ffae1f; --amber-dim:#6b4a10; --red:#ff3b24; --red-dim:#4a1610;
+  --green:#3ddc8a; --green-dim:#12402a; --blue:#4aa8ff;
+  --num:'Saira',system-ui,sans-serif; --lab:'Michroma','Saira',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--void);color:var(--ink)}
+body{font-family:var(--num);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background:
+    radial-gradient(1200px 500px at 50% -10%, #17191c 0%, transparent 70%),
+    repeating-linear-gradient(90deg, transparent 0 3px, rgba(255,255,255,.012) 3px 4px),
+    var(--void);}
+.lab{font-family:var(--lab);text-transform:uppercase;letter-spacing:.14em;font-size:8.5px;color:var(--ink2)}
+
+/* ---------- cabecera de la lámina ---------- */
+.sheet-head{max-width:1760px;margin:0 auto;padding:40px 40px 18px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:end;border-bottom:1px solid var(--bezel)}
+.sheet-head .kicker{font-family:var(--lab);font-size:10px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase}
+.sheet-head h1{font-family:var(--num);font-stretch:62%;font-weight:800;font-size:88px;line-height:.86;letter-spacing:-.01em;margin-top:10px;text-transform:uppercase}
+.sheet-head h1 span{color:var(--amber)}
+.sheet-head p{font-size:17px;font-stretch:88%;color:var(--ink2);margin-top:12px;max-width:640px;line-height:1.35}
+.specimen{display:flex;gap:26px;align-items:flex-end}
+.sw{display:flex;gap:6px}
+.sw i{display:block;width:48px;height:52px;border-radius:3px;position:relative;border:1px solid #ffffff10}
+.sw i::after{content:attr(data-n);position:absolute;bottom:-16px;left:0;font:7px var(--lab);letter-spacing:.08em;color:var(--ink2);white-space:nowrap}
+.types{border-left:1px solid var(--bezel);padding-left:22px}
+.types .t1{font-stretch:62%;font-weight:700;font-size:44px;line-height:.9}
+.types .t2{font-family:var(--lab);font-size:10px;letter-spacing:.2em;margin-top:6px;color:var(--ink2)}
+
+/* ---------- tablero de teléfonos ---------- */
+.board{max-width:1760px;margin:0 auto;padding:34px 40px 60px;display:flex;gap:30px;justify-content:center;flex-wrap:wrap}
+.cap{font-family:var(--lab);font-size:9px;letter-spacing:.24em;color:var(--tick);text-transform:uppercase;margin:0 0 12px 8px}
+.cap b{color:var(--amber);font-weight:400}
+.phone{width:390px;height:844px;border-radius:52px;background:var(--graphite);border:11px solid #16181b;
+  box-shadow:0 0 0 1px #2b2f34, 0 0 0 2px #060607, 0 40px 80px -30px #000, inset 0 0 0 1px #ffffff06;
+  position:relative;overflow:hidden;display:flex;flex-direction:column}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 26px 0;font-size:13px;font-weight:600;color:var(--ink2)}
+.status .notch{width:110px;height:28px;background:#000;border-radius:20px}
+.scr{flex:1;overflow:hidden;padding:4px 16px 0;display:flex;flex-direction:column;gap:12px}
+.phone::after{content:"";position:absolute;bottom:7px;left:50%;width:128px;height:4px;margin-left:-64px;border-radius:3px;background:#ece6d855}
+.nav{flex:none;height:78px;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:8px 10px 22px;background:linear-gradient(#0e0f11,#0a0b0c);border-top:1px solid var(--bezel)}
+.nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:8px;text-decoration:none;color:var(--tick);
+  background:linear-gradient(#17191c,#111315);box-shadow:inset 0 1px 0 #ffffff0a, 0 1px 0 #000}
+.nav a svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
+.nav a span{font:6.8px var(--lab);letter-spacing:.08em;text-transform:uppercase}
+.nav a.on{color:var(--amber);box-shadow:inset 0 1px 0 #ffffff0a, inset 0 -2px 0 var(--amber), 0 1px 0 #000}
+
+/* instrumentos genéricos */
+.pod{background:radial-gradient(120% 90% at 50% 0%, #1a1c20 0%, #101114 60%);border-radius:18px;border:1px solid var(--bezel);
+  box-shadow:inset 0 1px 0 #ffffff08, inset 0 -8px 20px #0006;position:relative}
+.row{display:flex;gap:10px}
+.telltales{display:flex;gap:6px;align-items:center}
+.tt{display:flex;align-items:center;gap:5px;height:24px;padding:0 8px;border-radius:5px;background:#0a0b0c;border:1px solid #1c1e22;font:7.5px var(--lab);letter-spacing:.1em;color:#34373c;text-transform:uppercase}
+.tt svg{width:13px;height:13px;fill:currentColor}
+.tt.g{color:var(--green);text-shadow:0 0 8px var(--green);box-shadow:inset 0 0 10px #3ddc8a22}
+.tt.a{color:var(--amber);text-shadow:0 0 8px var(--amber);box-shadow:inset 0 0 10px #ffae1f22}
+.tt.a svg,.tt.g svg{filter:drop-shadow(0 0 4px currentColor)}
+.blink{animation:blink 1.4s steps(1) infinite}
+@keyframes blink{50%{opacity:.25}}
+
+.who{display:flex;align-items:center;justify-content:space-between}
+.who h2{font-stretch:70%;font-weight:700;font-size:26px;letter-spacing:.01em;line-height:1}
+.who h2 small{display:block;font:8px var(--lab);letter-spacing:.2em;color:var(--ink2);margin-bottom:5px}
+.key{display:flex;background:#0a0b0c;border:1px solid var(--bezel);border-radius:18px;padding:3px}
+.key span{font:8px var(--lab);letter-spacing:.1em;padding:7px 9px;white-space:nowrap;border-radius:14px;color:var(--tick)}
+.key span.on{background:#23262a;color:var(--ink);box-shadow:inset 0 1px 0 #ffffff12}
+
+/* odómetro de tambor */
+.odo{display:inline-flex;gap:2px;padding:3px;background:#050506;border-radius:4px;box-shadow:inset 0 2px 4px #000, 0 1px 0 #ffffff0d}
+.odo b{width:17px;height:26px;display:grid;place-items:center;font-weight:600;font-size:18px;font-stretch:80%;color:var(--ink);
+  background:linear-gradient(#0c0d0e,#202328 45%,#202328 55%,#0c0d0e);border-radius:2px}
+.odo b.tenth{background:linear-gradient(#b8b3a6,#f1ece0 45%,#f1ece0 55%,#b8b3a6);color:#111}
+.odo i{align-self:end;font-style:normal;color:var(--ink2);font-size:14px;padding:0 1px}
+
+.btn-start{width:96px;height:96px;border-radius:50%;flex:none;border:none;cursor:pointer;position:relative;
+  background:radial-gradient(circle at 50% 35%, #2b2e33, #121316 70%);
+  box-shadow:0 0 0 5px #0a0b0c, 0 0 0 6px #33373c, 0 0 0 8px #0a0b0c, 0 10px 20px #000, inset 0 2px 0 #ffffff14;
+  color:var(--amber);display:grid;place-items:center;text-align:center}
+.btn-start::before{content:"";position:absolute;inset:9px;border-radius:50%;border:1.5px solid var(--amber);box-shadow:0 0 12px #ffae1f55, inset 0 0 12px #ffae1f33;opacity:.9}
+.btn-start span{font:8px var(--lab);letter-spacing:.16em;line-height:1.5;text-shadow:0 0 8px #ffae1f99}
+.btn-start strong{display:block;font-family:var(--num);font-stretch:70%;font-weight:800;font-size:18px;letter-spacing:.06em}
+
+.readout{font-stretch:62%;font-weight:700;line-height:.9}
+
+/* registrar */
+.dial-in{display:grid;grid-template-columns:50px 1fr 50px;align-items:center;gap:6px 8px;padding:8px 10px}
+.dial-in .lab{grid-column:1/-1;display:flex;justify-content:space-between;margin-bottom:-2px}
+.dial-in .lab em{font-style:normal;color:var(--tick)}
+.knob{width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;font:600 26px var(--num);color:var(--ink);
+  background:repeating-conic-gradient(from 0deg, #2a2d32 0 4deg, #1d1f23 4deg 8deg);
+  box-shadow:0 0 0 1px #000, 0 0 0 3px #1b1d20, 0 6px 10px #000, inset 0 0 0 7px #17191c, inset 0 1px 0 9px #ffffff08;line-height:1}
+.knob:active{transform:scale(.95)}
+.drum{display:flex;align-items:baseline;justify-content:center;gap:6px;background:#050506;border-radius:8px;padding:6px 0 4px;box-shadow:inset 0 3px 8px #000, 0 1px 0 #ffffff0d;
+  -webkit-mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent)}
+.drum input{width:110px;background:none;border:none;color:var(--ink);font:700 40px var(--num);font-stretch:70%;text-align:right;outline:none;font-variant-numeric:tabular-nums}
+.drum input:focus{color:var(--amber)}
+.drum u{text-decoration:none;font:8px var(--lab);letter-spacing:.14em;color:var(--ink2);width:52px}
+details.more{border:1px dashed var(--rim);border-radius:12px;padding:10px 12px}
+details.more summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary b{font-weight:500;font-stretch:85%;font-size:14px;color:var(--ink2)}
+.zones{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.zones span{height:26px;border-radius:4px;background:#0a0b0c;border:1px solid #1c1e22;display:grid;place-items:center;font:8px var(--lab);color:#33363b;letter-spacing:.1em}
+.zones span.on{color:#111;background:var(--amber);box-shadow:0 0 14px #ffae1f88;border-color:var(--amber)}
+.zones span.on.hot{background:var(--red);box-shadow:0 0 14px #ff3b2488;border-color:var(--red)}
+.save{height:52px;flex:none;border-radius:14px;border:none;cursor:pointer;width:100%;font:700 20px var(--num);font-stretch:70%;letter-spacing:.14em;text-transform:uppercase;color:#1a1204;
+  background:linear-gradient(#ffc04a,#ff9f0a);box-shadow:0 0 0 1px #000, 0 8px 24px -8px #ffae1f88, inset 0 1px 0 #fff6}
+
+/* progreso */
+.sub{display:flex;justify-content:space-between;align-items:baseline;padding:10px 12px 0}
+.big{font-stretch:62%;font-weight:700;font-size:30px;line-height:1;white-space:nowrap}
+.big small{font-size:13px;color:var(--ink2);font-weight:500;margin-left:3px}
+.cal{display:grid;grid-template-columns:28px repeat(7,1fr) 22px;gap:4px;align-items:center;padding:6px 12px 12px}
+.cal .d{font:7px var(--lab);color:var(--tick);text-align:center;letter-spacing:.05em}
+.cal .w{font:7px var(--lab);color:var(--tick);letter-spacing:.04em}
+.cal i{height:13px;border-radius:3px;background:#0b0c0d;border:1px solid #1b1d20}
+.cal i.s{background:var(--amber);border-color:var(--amber);box-shadow:0 0 7px #ffae1f77}
+.cal i.today{border-color:var(--ink2);border-style:dashed}
+.cal .ok{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 7px var(--green);justify-self:center}
+
+/* plan */
+.gear{display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;padding:7px 12px;border-radius:12px;border:1px solid var(--bezel);background:#0f1012}
+.gear .n{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font:800 24px var(--num);font-stretch:70%;color:var(--tick);background:#0a0b0c;box-shadow:inset 0 2px 5px #000, 0 0 0 1px #24272b}
+.gear h4{font-stretch:75%;font-weight:700;font-size:17px;letter-spacing:.04em;text-transform:uppercase}
+.gear p{font-size:12px;color:var(--ink2);font-stretch:88%;margin-top:1px}
+.gear .m{text-align:right;font-stretch:65%;font-weight:700;font-size:20px;line-height:1}
+.gear .m small{display:block;font:7px var(--lab);letter-spacing:.12em;color:var(--tick);margin-top:3px}
+.gear.cur{border-color:var(--amber);background:linear-gradient(90deg,#2a1f0a,#0f1012 70%)}
+.gear.cur .n{color:var(--amber);box-shadow:inset 0 2px 5px #000, 0 0 0 1px var(--amber), 0 0 12px #ffae1f55}
+.gear.next .n{color:var(--ink)}
+.why{display:grid;grid-template-columns:18px 1fr auto;gap:8px;align-items:center;padding:7px 0;border-top:1px solid #1d2023}
+.why:first-of-type{border-top:none}
+.why .l{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);justify-self:center}
+.why p{font-size:12.5px;font-stretch:88%;line-height:1.25}
+.why p b{font-weight:700;color:var(--ink)}
+.why p span{color:var(--ink2)}
+.acts{display:grid;grid-template-columns:1fr 1.25fr;gap:8px}
+.ghost{height:46px;border-radius:12px;border:1px solid var(--rim);background:#0f1012;color:var(--ink2);font:600 14px var(--num);font-stretch:80%;letter-spacing:.06em;text-transform:uppercase}
+.go{height:46px;border-radius:12px;border:none;font:700 15px var(--num);font-stretch:75%;letter-spacing:.08em;text-transform:uppercase;color:#1a1204;background:linear-gradient(#ffc04a,#ff9f0a);box-shadow:0 0 0 1px #000, 0 6px 18px -6px #ffae1f99}
+
+/* ---------- móvil real: pantallas a ancho completo, sin marco ---------- */
+@media (max-width:600px){
+  .sheet-head{grid-template-columns:1fr;padding:26px 16px 16px;gap:18px}
+  .sheet-head h1{font-size:60px}
+  .sheet-head p{font-size:15px}
+  .specimen{flex-wrap:wrap;gap:18px 20px}
+  .types{border-left:none;padding-left:0}
+  .board{padding:18px 0 40px;gap:26px}
+  .board>div{width:100%}
+  .cap{margin-left:16px}
+  .phone{width:100%;height:auto;min-height:0;border-radius:0;border:none;box-shadow:none;border-top:1px solid var(--bezel);border-bottom:1px solid var(--bezel)}
+  .status{display:none}
+  .phone::after{display:none}
+  .nav{padding-bottom:max(10px,env(safe-area-inset-bottom))}
+  .scr{padding-top:14px;padding-bottom:14px}
+  .nav{padding-bottom:10px;height:64px}
+}
+</style>
+</head>
+<body>
+
+<header class="sheet-head">
+  <div>
+    <div class="kicker">msefitness · Dirección 01</div>
+    <h1>Tablero<span>.</span></h1>
+    <p>Un cuadro de instrumentos de gran turismo: tu sesión se lee como un tacómetro, los kilómetros ruedan en un odómetro de tambor y el cambio de nivel es un cambio de marcha.</p>
+  </div>
+  <div class="specimen">
+    <div class="sw">
+      <i style="background:#0e0f11" data-n="Grafito"></i>
+      <i style="background:#1d2024" data-n="Bisel"></i>
+      <i style="background:#ffae1f" data-n="Ámbar"></i>
+      <i style="background:#ff3b24" data-n="Zona roja"></i>
+      <i style="background:#3ddc8a" data-n="Testigo"></i>
+      <i style="background:#ece6d8" data-n="Marfil"></i>
+    </div>
+    <div class="types">
+      <div class="t1">Saira 7.200</div>
+      <div class="t2">Michroma · rótulos</div>
+    </div>
+  </div>
+</header>
+
+<main class="board">
+
+<!-- ======================= 1 · INICIO ======================= -->
+<div>
+<div class="cap"><b>01</b> · Inicio / hoy</div>
+<section class="phone">
+  <div class="status"><span>8:15</span><span class="notch"></span><span>87%</span></div>
+  <div class="scr">
+    <div class="who">
+      <h2><small>Dom 27 sep</small>Hola, Tomás</h2>
+      <div class="key"><span class="on">Tomás</span><span>Ana</span></div>
+    </div>
+    <div class="telltales">
+      <div class="tt g"><svg viewBox="0 0 16 16"><path d="M8 1.5c1.8 2.4 4.5 4.4 4.5 7.6A4.5 4.5 0 0 1 3.5 9.1c0-1.4.6-2.6 1.6-3.6.2 1.3.9 2 1.7 2.3C6.5 5.6 7 3.4 8 1.5z"/></svg>Racha 6 sem</div>
+      <div class="tt a blink"><svg viewBox="0 0 16 16"><path d="M8 2l6 7H10v5H6V9H2z"/></svg>Subir nivel</div>
+      <div class="tt"><svg viewBox="0 0 16 16"><path d="M8 14.3 2.3 8.7a3.4 3.4 0 0 1 4.8-4.8L8 4.8l.9-.9a3.4 3.4 0 0 1 4.8 4.8z"/></svg>Pulso</div>
+    </div>
+
+    <div class="pod" style="padding:6px 0 10px">
+      <svg id="tach" viewBox="0 0 340 250" style="width:100%;display:block"></svg>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px;margin-top:-6px">
+        <div><div class="lab">Odo · total</div><div style="margin-top:5px" id="odo1"></div></div>
+        <div style="text-align:right"><div class="lab">Trip · semana</div><div class="readout" style="font-size:26px;margin-top:4px">60,1<small style="font-size:12px;color:var(--ink2);font-weight:500"> km</small></div></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="pod" style="flex:1;padding:8px 6px 6px">
+        <div class="lab" style="text-align:center">Semana · sesiones</div><svg id="fuel" viewBox="0 0 150 96" style="width:100%;display:block;margin-top:4px"></svg>
+      </div>
+      <div class="pod" style="flex:1;padding:8px 6px 6px">
+        <div class="lab" style="text-align:center">Pulso · última</div><svg id="temp" viewBox="0 0 150 96" style="width:100%;display:block;margin-top:4px"></svg>
+      </div>
+    </div>
+
+    <div class="row" style="align-items:center;gap:14px;padding:2px 4px 0">
+      <div style="flex:1">
+        <div class="lab">Última sesión · sáb 26 sep</div>
+        <div style="display:flex;gap:14px;margin-top:6px">
+          <div class="readout" style="font-size:28px">45<small style="font-size:12px;color:var(--ink2);font-weight:500"> min</small></div>
+          <div class="readout" style="font-size:28px">16,0<small style="font-size:12px;color:var(--ink2);font-weight:500"> km</small></div>
+          <div class="readout" style="font-size:28px">136<small style="font-size:12px;color:var(--ink2);font-weight:500"> lpm</small></div>
+        </div>
+        <div style="font-size:12px;color:var(--ink2);margin-top:4px;font-stretch:88%">≈ 627 kcal estimado · récord de distancia y duración.</div>
+      </div>
+      <button class="btn-start"><span>Registrar<strong>START</strong>sesión</span></button>
+    </div>
+  </div>
+  <nav class="nav">
+    <a class="on"><svg viewBox="0 0 24 24"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg><span>Inicio</span></a>
+    <a><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg><span>Registrar</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M3 18l5-6 4 3 8-9"/></svg><span>Progreso</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M12 3c3 4 6 6.5 6 11a6 6 0 0 1-12 0c0-2.3 1-4.2 2.6-5.8.3 2 1.3 3.2 2.6 3.7C11 9 11.2 6 12 3z"/></svg><span>Quema</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M6 5v14M12 5v14M6 12h12M18 5v7"/></svg><span>Plan</span></a>
+  </nav>
+</section>
+</div>
+
+<!-- ======================= 2 · REGISTRAR ======================= -->
+<div>
+<div class="cap"><b>02</b> · Registrar sesión</div>
+<section class="phone">
+  <div class="status"><span>8:16</span><span class="notch"></span><span>87%</span></div>
+  <div class="scr" style="gap:10px">
+    <div class="who">
+      <h2><small>Nueva sesión</small>Registrar</h2>
+      <div class="key"><span class="on">Hoy · dom 27</span></div>
+    </div>
+
+    <div class="pod dial-in" data-f="min" data-step="1" data-min="1" data-max="180">
+      <div class="lab"><span>Tiempo</span><em>obligatorio</em></div>
+      <button class="knob" data-d="-1">−</button>
+      <div class="drum"><input inputmode="numeric" value="48" aria-label="Tiempo en minutos"><u>min</u></div>
+      <button class="knob" data-d="1">+</button>
+    </div>
+    <div class="pod dial-in" data-f="km" data-step="0.1" data-min="0" data-max="99">
+      <div class="lab"><span>Distancia</span><em>la que marca la bici</em></div>
+      <button class="knob" data-d="-1">−</button>
+      <div class="drum"><input inputmode="decimal" value="17,1" aria-label="Distancia en km"><u>km</u></div>
+      <button class="knob" data-d="1">+</button>
+    </div>
+    <div class="pod dial-in" data-f="fc" data-step="1" data-min="60" data-max="220">
+      <div class="lab"><span>Pulso promedio</span><em>FCmáx 174 · 49 años</em></div>
+      <button class="knob" data-d="-1">−</button>
+      <div class="drum"><input inputmode="numeric" value="137" aria-label="Pulso promedio"><u>lpm</u></div>
+      <button class="knob" data-d="1">+</button>
+    </div>
+
+    <details class="more">
+      <summary><b>Más datos · pulso máx, esfuerzo, nota</b><span class="lab">Opcional ▾</span></summary>
+    </details>
+
+    <div class="pod" style="padding:10px 12px 12px;display:grid;grid-template-columns:128px 1fr;gap:12px;align-items:center">
+      <svg id="mini" viewBox="0 0 128 100" style="width:128px;display:block"></svg>
+      <div>
+        <div class="lab">Vista previa</div>
+        <div class="readout" style="font-size:40px;margin-top:4px" id="pv-steps">7.680</div>
+        <div style="font-size:12px;color:var(--ink2);font-stretch:88%" id="pv-meta">pasos eq · 110 % de tu meta</div>
+        <div class="zones" style="margin-top:8px" id="pv-z"><span>Z1</span><span>Z2</span><span>Z3</span><span>Z4</span><span>Z5</span></div>
+        <div style="font-size:11.5px;color:var(--ink2);margin-top:6px;font-stretch:88%" id="pv-eff">79 % FCmáx · 2,60 m por latido</div>
+      </div>
+    </div>
+
+    <button class="save">Guardar sesión</button>
+  </div>
+  <nav class="nav">
+    <a><svg viewBox="0 0 24 24"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg><span>Inicio</span></a>
+    <a class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg><span>Registrar</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M3 18l5-6 4 3 8-9"/></svg><span>Progreso</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M12 3c3 4 6 6.5 6 11a6 6 0 0 1-12 0c0-2.3 1-4.2 2.6-5.8.3 2 1.3 3.2 2.6 3.7C11 9 11.2 6 12 3z"/></svg><span>Quema</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M6 5v14M12 5v14M6 12h12M18 5v7"/></svg><span>Plan</span></a>
+  </nav>
+</section>
+</div>
+
+<!-- ======================= 3 · PROGRESO ======================= -->
+<div>
+<div class="cap"><b>03</b> · Progreso</div>
+<section class="phone">
+  <div class="status"><span>8:17</span><span class="notch"></span><span>86%</span></div>
+  <div class="scr" style="gap:10px">
+    <div class="who">
+      <h2><small>24 sesiones</small>Progreso</h2>
+      <div class="key"><span>4 sem</span><span class="on">6 sem</span><span>Todo</span></div>
+    </div>
+
+    <div class="pod" style="padding:8px 10px 8px;display:grid;grid-template-columns:162px 1fr;gap:6px;align-items:center">
+      <svg id="disc" viewBox="0 0 170 170" style="width:162px;display:block"></svg>
+      <div>
+        <div class="lab">Tacógrafo</div>
+        <div class="big" style="margin-top:6px">4.800 → 7.200</div>
+        <p style="font-size:11.5px;color:var(--ink2);line-height:1.3;margin-top:6px;font-stretch:88%">Cada rayo es una sesión, en orden horario desde el 17 ago. El anillo ámbar es tu meta de 7.000; el rojo, el tope de 10.000.</p>
+      </div>
+    </div>
+
+    <div class="pod" style="padding-bottom:6px">
+      <div class="sub"><span class="lab">Pulso promedio</span><span class="big" style="font-size:22px">146 → 136<small>lpm</small></span></div>
+      <svg id="scope" viewBox="0 0 340 92" style="width:100%;display:block"></svg>
+    </div>
+
+    <div class="row">
+      <div class="pod" style="flex:1.1;padding:10px 6px 8px">
+        <div class="lab" style="text-align:center">Eficiencia</div>
+        <svg id="eff" viewBox="0 0 160 92" style="width:100%;display:block"></svg>
+        <div style="font-size:10.5px;color:var(--ink2);text-align:center;font-stretch:88%;margin-top:2px"><b style="color:var(--green)">+20 %</b> · tenue = 17 ago</div>
+      </div>
+      <div class="pod" style="flex:1;padding:10px 10px 8px;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="lab">Odo · acumulado</div>
+        <div id="odo2" style="margin:6px 0"></div>
+        <div style="font-size:11px;color:var(--ink2);font-stretch:88%;line-height:1.3">Media semanal 49,5 km<br>Récord: 16,0 km · 26 sep</div>
+      </div>
+    </div>
+
+    <div class="pod">
+      <div class="sub" style="padding-bottom:4px"><span class="lab">Constancia</span><span class="lab" style="color:var(--green)">● semana cumplida</span></div>
+      <div class="cal" id="cal"></div>
+    </div>
+  </div>
+  <nav class="nav">
+    <a><svg viewBox="0 0 24 24"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg><span>Inicio</span></a>
+    <a><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg><span>Registrar</span></a>
+    <a class="on"><svg viewBox="0 0 24 24"><path d="M3 18l5-6 4 3 8-9"/></svg><span>Progreso</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M12 3c3 4 6 6.5 6 11a6 6 0 0 1-12 0c0-2.3 1-4.2 2.6-5.8.3 2 1.3 3.2 2.6 3.7C11 9 11.2 6 12 3z"/></svg><span>Quema</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M6 5v14M12 5v14M6 12h12M18 5v7"/></svg><span>Plan</span></a>
+  </nav>
+</section>
+</div>
+
+<!-- ======================= 4 · PLAN Y NIVEL ======================= -->
+<div>
+<div class="cap"><b>04</b> · Plan y nivel</div>
+<section class="phone">
+  <div class="status"><span>8:18</span><span class="notch"></span><span>86%</span></div>
+  <div class="scr" style="gap:10px">
+    <div class="who">
+      <h2><small>Caja de cambios</small>Tu plan</h2>
+      <div class="tt a blink" style="height:28px"><svg viewBox="0 0 16 16"><path d="M8 2l6 7H10v5H6V9H2z"/></svg>Cambio 3ª</div>
+    </div>
+
+    <div class="pod" style="padding:8px 12px 10px;display:grid;grid-template-columns:140px 1fr;gap:10px;align-items:center">
+      <svg id="gate" viewBox="0 0 140 120" style="width:140px;display:block"></svg>
+      <div>
+        <div class="lab">Marcha actual</div>
+        <div class="readout" style="font-size:46px;margin-top:2px">2ª<span style="font-size:18px;color:var(--ink2);font-weight:500;margin-left:6px">Medio</span></div>
+        <div style="font-size:12px;color:var(--ink2);font-stretch:88%;margin-top:4px;line-height:1.3">Desde el 17 ago · 6 semanas en esta marcha. Ana va en 1ª, racha 3 semanas.</div>
+      </div>
+    </div>
+
+    <div class="gear"><div class="n">1</div><div><h4>Principiante</h4><p>3 ses/sem · 25–35 min · Z2 (60–70 %)</p></div><div class="m">4.000<small>pasos eq</small></div></div>
+    <div class="gear cur"><div class="n">2</div><div><h4>Medio <span class="lab" style="color:var(--amber);font-size:7px;margin-left:4px">● actual</span></h4><p>4 ses/sem · 40–50 min · Z3 (70–80 %)</p></div><div class="m">7.000<small>pasos eq</small></div></div>
+    <div class="gear next"><div class="n">3</div><div><h4>Avanzado</h4><p>5 ses/sem · 55–65 min · Z3 + Z4</p></div><div class="m" style="color:var(--red)">10.000<small>tope · redline</small></div></div>
+
+    <div class="pod" style="padding:10px 12px 12px;border-color:#5a3f0e">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <div class="lab" style="color:var(--amber)">Indicador de cambio · listo para 3ª</div>
+      </div>
+      <div class="why"><i class="l"></i><p><b>7 de 10</b> sesiones sobre el 90 % de la meta <span>(regla: 7 de 10)</span></p><svg class="spk" data-k="pct" viewBox="0 0 60 22" width="60" height="22"></svg></div>
+      <div class="why"><i class="l"></i><p>Pulso promedio <b>146 → 136 lpm</b> <span>con más minutos</span></p><svg class="spk" data-k="fc" viewBox="0 0 60 22" width="60" height="22"></svg></div>
+      <div class="why"><i class="l"></i><p>Eficiencia <b>2,17 → 2,61 m/latido</b> <span>(+20 %)</span></p><svg class="spk" data-k="eff" viewBox="0 0 60 22" width="60" height="22"></svg></div>
+      <div class="acts" style="margin-top:10px"><button class="ghost">Seguir en 2ª</button><button class="go">Pasar a Avanzado</button></div>
+      <p style="font-size:10.5px;color:var(--tick);margin-top:8px;line-height:1.3;font-stretch:88%">Si en 3 de 5 sesiones quedas bajo el 60 % de la meta, o tu pulso pasa el 85 % de FCmáx 3 veces seguidas, el indicador sugiere bajar una marcha.</p>
+    </div>
+  </div>
+  <nav class="nav">
+    <a><svg viewBox="0 0 24 24"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg><span>Inicio</span></a>
+    <a><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg><span>Registrar</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M3 18l5-6 4 3 8-9"/></svg><span>Progreso</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M12 3c3 4 6 6.5 6 11a6 6 0 0 1-12 0c0-2.3 1-4.2 2.6-5.8.3 2 1.3 3.2 2.6 3.7C11 9 11.2 6 12 3z"/></svg><span>Quema</span></a>
+    <a class="on"><svg viewBox="0 0 24 24"><path d="M6 5v14M12 5v14M6 12h12M18 5v7"/></svg><span>Plan</span></a>
+  </nav>
+</section>
+</div>
+
+<!-- ======================= 5 · QUEMA DE GRASA ======================= -->
+<div>
+<div class="cap"><b>05</b> · Quema de grasa</div>
+<section class="phone">
+  <div class="status"><span>7:42</span><span class="notch"></span><span>91%</span></div>
+  <div class="scr" style="gap:9px">
+    <div class="who">
+      <h2><small>Programa guiado · control crucero</small>Quema de grasa</h2>
+      <div class="tt g"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5"/></svg>En zona</div>
+    </div>
+
+    <div class="pod" style="padding:10px 12px 10px">
+      <div style="display:flex;justify-content:space-between"><span class="lab" style="color:var(--amber)">Crucero · bloque 3/9</span><span class="lab">Oleadas · 6.ª de 8</span></div>
+      <div style="display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:center;margin-top:4px">
+        <svg id="cruise" viewBox="0 0 150 112" style="width:150px;display:block"></svg>
+        <div>
+          <div class="lab">Z3 alto · quedan</div>
+          <div class="readout" style="font-size:54px;letter-spacing:.01em">1:48</div>
+          <div style="font-size:12px;color:var(--ink2);font-stretch:88%;line-height:1.3">Mantén <b style="color:var(--ink)">131–139 lpm</b></div>
+          <div style="margin-top:7px;padding:6px 8px;border-radius:8px;background:#0a0b0c;border:1px solid var(--bezel);font-size:12px;font-stretch:88%;line-height:1.25"><span class="lab" style="font-size:7px">Luego ▸</span> Z2 · 5:00<br><span style="color:var(--ink2)">104–122 lpm</span></div>
+        </div>
+      </div>
+      <svg id="route" viewBox="0 0 340 58" style="width:100%;display:block;margin-top:8px"></svg>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink2);font-stretch:88%;margin-top:2px"><span>11:12 de 38:00</span><span>≈ 466 kcal al terminar · estimado</span></div>
+    </div>
+
+    <div class="lab" style="margin:2px 0 -3px 2px">Niveles · la forma de cada sesión</div>
+    <div class="gear" style="grid-template-columns:30px 1fr 118px"><div class="n" style="width:30px;height:30px;font-size:17px">1</div><div><h4 style="font-size:14px">Base quemadora</h4><p>30 min · 3/sem · Z2 continuo</p></div><svg class="prof" data-p="1" viewBox="0 0 118 30"></svg></div>
+    <div class="gear cur" style="grid-template-columns:30px 1fr 118px"><div class="n" style="width:30px;height:30px;font-size:17px">2</div><div><h4 style="font-size:14px">Oleadas</h4><p>38 min · 4/sem · <span style="color:var(--amber)">5 de 8 ✓</span></p></div><svg class="prof" data-p="2" viewBox="0 0 118 30"></svg></div>
+    <div class="gear" style="grid-template-columns:30px 1fr 118px"><div class="n" style="width:30px;height:30px;font-size:17px">3</div><div><h4 style="font-size:14px">Intervalos + fondo</h4><p>45 min · 4/sem · alterna</p></div><svg class="prof" data-p="3" viewBox="0 0 118 30"></svg></div>
+
+    <div class="pod" style="padding:8px 12px 8px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lab">Peso semanal</span><span class="big" style="font-size:24px">89,0<small>kg</small> <span style="color:var(--green);font-size:18px;margin-left:4px">−2,4</span></span></div>
+      <svg id="weight" viewBox="0 0 340 70" style="width:100%;display:block"></svg>
+      <p style="font-size:10.5px;color:var(--tick);line-height:1.3;font-stretch:88%;margin-top:2px">Bajar de peso depende sobre todo del déficit calórico: estas sesiones suman gasto, no prometen kilos.</p>
+    </div>
+  </div>
+  <nav class="nav">
+    <a><svg viewBox="0 0 24 24"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg><span>Inicio</span></a>
+    <a><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg><span>Registrar</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M3 18l5-6 4 3 8-9"/></svg><span>Progreso</span></a>
+    <a class="on"><svg viewBox="0 0 24 24"><path d="M12 3c3 4 6 6.5 6 11a6 6 0 0 1-12 0c0-2.3 1-4.2 2.6-5.8.3 2 1.3 3.2 2.6 3.7C11 9 11.2 6 12 3z"/></svg><span>Quema</span></a>
+    <a><svg viewBox="0 0 24 24"><path d="M6 5v14M12 5v14M6 12h12M18 5v7"/></svg><span>Plan</span></a>
+  </nav>
+</section>
+</div>
+
+</main>
+
+<script>
+/* ---------- datos (SPEC.md) ---------- */
+const S = {
+  date:['17-08','19-08','21-08','22-08','24-08','26-08','28-08','29-08','31-08','02-09','04-09','05-09','07-09','09-09','11-09','12-09','14-09','16-09','18-09','19-09','21-09','23-09','25-09','26-09'],
+  steps:[4800,4960,4960,5440,5120,5280,5280,5440,5920,4640,5760,5760,5920,6240,6080,6080,6240,6400,6720,6560,6560,6720,6720,7200],
+  fc:[146,149,145,145,144,147,143,143,143,145,142,141,141,143,140,139,139,142,138,138,137,140,136,136],
+  eff:[2.17,2.14,2.2,2.21,2.26,2.21,2.29,2.3,2.31,2.28,2.35,2.38,2.4,2.37,2.44,2.46,2.47,2.43,2.52,2.53,2.56,2.52,2.61,2.61]
+};
+const FCMAX=174, META=7000;
+const NS='http://www.w3.org/2000/svg';
+const fmt=(n,d=0)=>n.toLocaleString('es-CL',{minimumFractionDigits:d,maximumFractionDigits:d});
+function el(p,tag,a={},txt){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;p.appendChild(e);return e}
+function P(cx,cy,r,deg){const a=(deg-90)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)]}
+function arc(cx,cy,r,d1,d2){const [x1,y1]=P(cx,cy,r,d1),[x2,y2]=P(cx,cy,r,d2);return `M${x1} ${y1}A${r} ${r} 0 ${Math.abs(d2-d1)>180?1:0} 1 ${x2} ${y2}`}
+function defs(svg){const d=el(svg,'defs');
+  const g=el(d,'filter',{id:svg.id+'-glow',x:'-50%',y:'-50%',width:'200%',height:'200%'});
+  el(g,'feGaussianBlur',{stdDeviation:'2.2',result:'b'});const m=el(g,'feMerge');el(m,'feMergeNode',{in:'b'});el(m,'feMergeNode',{in:'SourceGraphic'});
+  return `url(#${svg.id}-glow)`}
+
+/* aguja genérica */
+function needle(svg,cx,cy,len,deg,color,glow,w=3,tail=14,ghost=false){
+  const g=el(svg,'g',{transform:`rotate(${deg} ${cx} ${cy})`,filter:ghost?'':glow,opacity:ghost?.35:1});
+  el(g,'path',{d:`M${cx-w/2} ${cy+tail} L${cx-w*0.28} ${cy-len} L${cx+w*0.28} ${cy-len} L${cx+w/2} ${cy+tail} Z`,fill:color});
+  return g}
+function cap(svg,cx,cy,r){el(svg,'circle',{cx,cy,r:r+3,fill:'#050506'});el(svg,'circle',{cx,cy,r,fill:'#24272b',stroke:'#3a3e44','stroke-width':1})}
+
+/* ---------- tacómetro principal ---------- */
+(function(){
+  const s=document.getElementById('tach'),glow=defs(s),cx=170,cy=136,R=108,A0=-135,A1=135,V=v=>A0+(A1-A0)*v/10;
+  el(s,'circle',{cx,cy,r:R+8,fill:'#0b0c0e',stroke:'#23262a','stroke-width':1.5});
+  // zona roja 9–10
+  el(s,'path',{d:arc(cx,cy,R-6,V(9),V(10)),stroke:'var(--red)','stroke-width':10,fill:'none',opacity:.9});
+  // arco de progreso ámbar tenue hasta el valor
+  el(s,'path',{d:arc(cx,cy,R-6,V(0),V(7.2)),stroke:'#ffae1f','stroke-width':3,fill:'none',opacity:.35});
+  for(let v=0;v<=10.001;v+=0.2){const maj=Math.abs(v-Math.round(v))<.01,half=!maj&&Math.abs(v*2-Math.round(v*2))<.01;
+    const [x1,y1]=P(cx,cy,R,V(v)),[x2,y2]=P(cx,cy,R-(maj?16:half?10:6),V(v));
+    el(s,'line',{x1,y1,x2,y2,stroke:v>=9?'#ff6a55':maj?'#ece6d8':'#6c7078','stroke-width':maj?2.4:1.1});
+    if(maj){const [tx,ty]=P(cx,cy,R-30,V(v));el(s,'text',{x:tx,y:ty+6,'text-anchor':'middle','font-family':'Saira','font-weight':600,'font-size':17,'font-stretch':'75%',fill:v>=9?'#ff5a44':'#ece6d8'},Math.round(v))}}
+  // marcador meta 7
+  const [mx,my]=P(cx,cy,R+4,V(7)),[mx2,my2]=P(cx,cy,R+14,V(7)-3),[mx3,my3]=P(cx,cy,R+14,V(7)+3);
+  el(s,'path',{d:`M${mx} ${my}L${mx2} ${my2}L${mx3} ${my3}Z`,fill:'var(--amber)',filter:glow});
+  const [lx,ly]=P(cx,cy,R+22,V(7)+10);
+  el(s,'text',{x:lx,y:ly,'font-family':'Michroma','font-size':7,fill:'#ffae1f','letter-spacing':'.1em'},'META');
+  el(s,'text',{x:cx,y:cy-52,'text-anchor':'middle','font-family':'Michroma','font-size':7,fill:'#6c7078','letter-spacing':'.16em'},'PASOS EQ × 1000');
+  // lectura digital
+  el(s,'rect',{x:cx-44,y:cy+28,width:88,height:50,rx:8,fill:'#050506',stroke:'#1d2024'});
+  el(s,'text',{x:cx,y:cy+63,'text-anchor':'middle','font-family':'Saira','font-weight':700,'font-size':36,'font-stretch':'62%',fill:'#ece6d8'},'7.200');
+  el(s,'text',{x:cx,y:cy+74,'text-anchor':'middle','font-family':'Michroma','font-size':6.5,fill:'#3ddc8a','letter-spacing':'.12em'},'103 % DE LA META');
+  el(s,'text',{x:cx,y:cy+100,'text-anchor':'middle','font-family':'Michroma','font-size':6.5,fill:'#6c7078','letter-spacing':'.12em'},'ÚLTIMA SESIÓN · Z3');
+  needle(s,cx,cy,R-8,V(7.2),'#ff5a2a',glow,4.5,18);
+  cap(s,cx,cy,11);
+})();
+
+/* odómetros */
+function odo(id,str){const h=document.getElementById(id);const d=document.createElement('div');d.className='odo';
+  const [a,b]=str.split(',');for(const c of a){const x=document.createElement('b');x.textContent=c;d.appendChild(x)}
+  const i=document.createElement('i');i.textContent=',';d.appendChild(i);const t=document.createElement('b');t.className='tenth';t.textContent=b;d.appendChild(t);
+  const u=document.createElement('i');u.textContent=' km';u.style.fontSize='11px';u.style.alignSelf='center';u.style.fontFamily='Michroma';u.style.letterSpacing='.1em';d.appendChild(u);h.appendChild(d)}
+odo('odo1','00297,1');odo('odo2','0297,1');
+
+/* medidores chicos: semana (combustible) y pulso (temperatura) */
+function smallGauge(id,{label,min,max,val,ticks,labels,red,valText,sub,color}){
+  const s=document.getElementById(id),glow=defs(s),cx=75,cy=62,R=48,A0=-70,A1=70,V=v=>A0+(A1-A0)*(v-min)/(max-min);
+  el(s,'path',{d:arc(cx,cy,R,A0,A1),stroke:'#24272b','stroke-width':1,fill:'none'});
+  if(red)el(s,'path',{d:arc(cx,cy,R-4,V(red[0]),V(red[1])),stroke:'var(--red)','stroke-width':6,fill:'none',opacity:.85});
+  if(color)el(s,'path',{d:arc(cx,cy,R-4,V(min),V(val)),stroke:color,'stroke-width':6,fill:'none',filter:glow});
+  ticks.forEach(v=>{const [x1,y1]=P(cx,cy,R,V(v)),[x2,y2]=P(cx,cy,R-(labels[v]!=null?12:7),V(v));el(s,'line',{x1,y1,x2,y2,stroke:'#9a968c','stroke-width':1.3})});
+  for(const v in labels){const [tx,ty]=P(cx,cy,R+9,V(+v));el(s,'text',{x:tx,y:ty+3,'text-anchor':'middle','font-family':'Saira','font-size':9,'font-weight':600,fill:'#8a867d'},labels[v])}
+  el(s,'text',{x:cx,y:cy+24,'text-anchor':'middle','font-family':'Saira','font-weight':700,'font-size':22,'font-stretch':'62%',fill:'#ece6d8'},valText);
+  el(s,'text',{x:cx,y:cy+33,'text-anchor':'middle','font-family':'Michroma','font-size':5.8,fill:'#8a867d','letter-spacing':'.1em'},sub);
+  needle(s,cx,cy,R-6,V(val),'#ff5a2a',glow,3,6);cap(s,cx,cy,5);
+}
+smallGauge('fuel',{label:'SEMANA · SESIONES',min:0,max:4,val:4,ticks:[0,1,2,3,4],labels:{0:'0',2:'½',4:'4'},valText:'4 / 4',sub:'SEMANA CUMPLIDA',color:'#3ddc8a'});
+smallGauge('temp',{label:'PULSO · ÚLTIMA',min:100,max:180,val:136,ticks:[100,110,120,130,140,150,160,170,180],labels:{100:'100',140:'140',180:'180'},red:[148,180],valText:'136 lpm',sub:'78 % FCMÁX · Z3'});
+
+/* ---------- registrar: mini tacómetro + lógica en vivo ---------- */
+const mini=document.getElementById('mini'),mglow=defs(mini);
+(function(){const s=mini,cx=64,cy=62,R=50,V=v=>-120+240*v/10;
+  el(s,'path',{d:arc(cx,cy,R-3,V(9),V(10)),stroke:'var(--red)','stroke-width':5,fill:'none'});
+  for(let v=0;v<=10;v+=0.5){const maj=v%1===0;const [x1,y1]=P(cx,cy,R,V(v)),[x2,y2]=P(cx,cy,R-(maj?9:5),V(v));el(s,'line',{x1,y1,x2,y2,stroke:v>=9?'#ff6a55':maj?'#ece6d8':'#6c7078','stroke-width':maj?1.8:1});
+    if(maj&&v%2===0){const [tx,ty]=P(cx,cy,R-17,V(v));el(s,'text',{x:tx,y:ty+3.5,'text-anchor':'middle','font-family':'Saira','font-size':10,'font-weight':600,fill:'#bdb8ab'},v)}}
+  const [mx,my]=P(cx,cy,R+3,V(7)),[a,b]=P(cx,cy,R+10,V(7)-5),[c,d]=P(cx,cy,R+10,V(7)+5);el(s,'path',{d:`M${mx} ${my}L${a} ${b}L${c} ${d}Z`,fill:'#ffae1f'});
+  el(s,'text',{x:cx,y:cy+30,'text-anchor':'middle','font-family':'Michroma','font-size':5.5,fill:'#6c7078','letter-spacing':'.12em'},'× 1000');
+  s._n=needle(s,cx,cy,R-6,0,'#ff5a2a',mglow,3,8);s._n.style.transition='transform .5s cubic-bezier(.3,1.6,.5,1)';cap(s,cx,cy,5);
+})();
+function parse(v){return parseFloat(String(v).replace(/\./g,'').replace(',','.'))||0}
+function live(){
+  const get=f=>parse(document.querySelector(`[data-f="${f}"] input`).value);
+  const m=get('min'),km=get('km'),fc=get('fc');const p=fc/FCMAX;const z=p<.6?1:p<.7?2:p<.8?3:p<.9?4:5;const f=z===1?100:z===2?130:160;const st=Math.round(m*f);
+  document.getElementById('pv-steps').textContent=fmt(st);
+  document.getElementById('pv-meta').textContent=`pasos eq · ${fmt(Math.round(st/META*100))} % de tu meta`;
+  document.getElementById('pv-eff').textContent=`${fmt(Math.round(p*100))} % FCmáx · ${fmt(km*1000/(fc*m)||0,2)} m por latido`;
+  [...document.querySelectorAll('#pv-z span')].forEach((s,i)=>{s.className=i+1===z?('on'+(z>=5||p>=.85?' hot':'')):''});
+  const deg=-120+240*Math.min(st,10000)/10000;mini._n.setAttribute('transform',`rotate(${deg} 64 62)`);
+}
+document.querySelectorAll('.dial-in').forEach(box=>{
+  const inp=box.querySelector('input'),step=+box.dataset.step,dec=step<1?1:0;
+  box.querySelectorAll('.knob').forEach(k=>k.addEventListener('click',()=>{let v=parse(inp.value)+step*(+k.dataset.d);
+    v=Math.max(+box.dataset.min,Math.min(+box.dataset.max,v));inp.value=fmt(v,dec);live()}));
+  inp.addEventListener('input',live);
+});
+live();
+
+/* ---------- progreso: tacógrafo ---------- */
+(function(){const s=document.getElementById('disc'),glow=defs(s),cx=85,cy=85,r0=24,R=80,rad=v=>r0+(R-r0)*v/10000,n=S.steps.length;
+  el(s,'circle',{cx,cy,r:R+3,fill:'#0b0c0e',stroke:'#23262a'});
+  [2500,5000].forEach(v=>el(s,'circle',{cx,cy,r:rad(v),fill:'none',stroke:'#23262a','stroke-width':.8}));
+  S.steps.forEach((v,i)=>{const a=i*360/n+2,b=(i+1)*360/n-2,r=rad(v),[x1,y1]=P(cx,cy,r0,a),[x2,y2]=P(cx,cy,r,a),[x3,y3]=P(cx,cy,r,b),[x4,y4]=P(cx,cy,r0,b);
+    const hit=v/META>=.9;el(s,'path',{d:`M${x1} ${y1}L${x2} ${y2}A${r} ${r} 0 0 1 ${x3} ${y3}L${x4} ${y4}A${r0} ${r0} 0 0 0 ${x1} ${y1}Z`,fill:hit?'#ffae1f':'#8a6a2a',opacity:hit?1:.75})});
+  el(s,'circle',{cx,cy,r:rad(META),fill:'none',stroke:'#ffae1f','stroke-width':1.4,'stroke-dasharray':'2 2',filter:glow});
+  el(s,'circle',{cx,cy,r:rad(10000),fill:'none',stroke:'var(--red)','stroke-width':1.6});
+  el(s,'circle',{cx,cy,r:r0-2,fill:'#050506',stroke:'#2a2e33'});
+  el(s,'text',{x:cx,y:cy+2,'text-anchor':'middle','font-family':'Saira','font-weight':700,'font-size':15,'font-stretch':'62%',fill:'#ece6d8'},'24');
+  el(s,'text',{x:cx,y:cy+10,'text-anchor':'middle','font-family':'Michroma','font-size':4.5,fill:'#8a867d','letter-spacing':'.08em'},'SESIONES');
+  const [ax,ay]=P(cx,cy,R-2,0);el(s,'path',{d:`M${ax} ${ay+6}l-3 -6h6z`,fill:'#ece6d8'});
+})();
+
+/* osciloscopio de pulso */
+(function(){const s=document.getElementById('scope'),glow=defs(s),x0=34,x1=330,y0=8,y1=80,lo=130,hi=152,X=i=>x0+(x1-x0)*i/(S.fc.length-1),Y=v=>y1-(y1-y0)*(v-lo)/(hi-lo);
+  for(let i=0;i<=8;i++){const x=x0+(x1-x0)*i/8;el(s,'line',{x1:x,y1:y0,x2:x,y2:y1,stroke:'#1c1f22','stroke-width':1})}
+  [130,135,140,148].forEach(v=>{el(s,'line',{x1:x0,y1:Y(v),x2:x1,y2:Y(v),stroke:v===148?'#ff3b24':'#1c1f22','stroke-width':v===148?1:1,'stroke-dasharray':v===148?'3 3':''});
+    el(s,'text',{x:x0-6,y:Y(v)+3,'text-anchor':'end','font-family':'Saira','font-size':9,fill:v===148?'#ff5a44':'#6c7078'},v)});
+  el(s,'text',{x:x1-2,y:Y(148)-4,'text-anchor':'end','font-family':'Michroma','font-size':5.5,fill:'#ff5a44','letter-spacing':'.1em'},'ALERTA 85 % FCMÁX');
+  const pts=S.fc.map((v,i)=>`${X(i)},${Y(v)}`).join(' ');
+  el(s,'polyline',{points:pts,fill:'none',stroke:'#ffae1f','stroke-width':2,'stroke-linejoin':'round',filter:glow});
+  el(s,'circle',{cx:X(23),cy:Y(136),r:3.5,fill:'#ffae1f',filter:glow});
+  el(s,'text',{x:x0,y:y1+11,'font-family':'Michroma','font-size':5.5,fill:'#6c7078','letter-spacing':'.1em'},'17 AGO');
+  el(s,'text',{x:x1,y:y1+11,'text-anchor':'end','font-family':'Michroma','font-size':5.5,fill:'#6c7078','letter-spacing':'.1em'},'26 SEP');
+})();
+
+/* eficiencia: aguja fantasma */
+(function(){const s=document.getElementById('eff'),glow=defs(s),cx=80,cy=70,R=54,min=2.0,max=2.8,V=v=>-80+160*(v-min)/(max-min);
+  el(s,'path',{d:arc(cx,cy,R-4,V(2.17),V(2.61)),stroke:'#3ddc8a','stroke-width':5,fill:'none',opacity:.8,filter:glow});
+  for(let v=2.0;v<=2.8001;v+=0.05){const maj=Math.abs(v*10-Math.round(v*10))<.01;const [x1,y1]=P(cx,cy,R,V(v)),[x2,y2]=P(cx,cy,R-(maj?10:5),V(v));el(s,'line',{x1,y1,x2,y2,stroke:maj?'#bdb8ab':'#55585e','stroke-width':maj?1.5:1});
+    if(maj&&Math.round(v*10)%2===0){const [tx,ty]=P(cx,cy,R+9,V(v));el(s,'text',{x:tx,y:ty+3,'text-anchor':'middle','font-family':'Saira','font-size':8.5,'font-weight':600,fill:'#8a867d'},fmt(v,1))}}
+  needle(s,cx,cy,R-8,V(2.17),'#ece6d8',glow,2.4,6,true);
+  needle(s,cx,cy,R-8,V(2.61),'#ff5a2a',glow,3,6);cap(s,cx,cy,5);
+  el(s,'text',{x:cx,y:cy+19,'text-anchor':'middle','font-family':'Saira','font-weight':700,'font-size':18,'font-stretch':'62%',fill:'#ece6d8'},'2,61');
+  
+})();
+
+/* calendario de luces */
+(function(){const c=document.getElementById('cal');const days=['L','M','M','J','V','S','D'];
+  c.appendChild(Object.assign(document.createElement('span'),{className:'w'}));days.forEach(d=>c.appendChild(Object.assign(document.createElement('span'),{className:'d',textContent:d})));c.appendChild(document.createElement('span'));
+  const start=new Date(2026,7,17),ses=new Set(S.date);
+  for(let w=0;w<6;w++){const d0=new Date(start);d0.setDate(start.getDate()+w*7);
+    c.appendChild(Object.assign(document.createElement('span'),{className:'w',textContent:d0.getDate()+'/'+(d0.getMonth()+1)}));
+    for(let k=0;k<7;k++){const d=new Date(start);d.setDate(start.getDate()+w*7+k);const key=String(d.getDate()).padStart(2,'0')+'-'+String(d.getMonth()+1).padStart(2,'0');
+      const i=document.createElement('i');if(ses.has(key))i.className='s';if(w===5&&k===6)i.className='today';c.appendChild(i)}
+    c.appendChild(Object.assign(document.createElement('span'),{className:'ok'}))}
+})();
+
+/* caja de cambios */
+(function(){const s=document.getElementById('gate'),glow=defs(s);
+  el(s,'rect',{x:2,y:2,width:136,height:116,rx:14,fill:'#0a0b0c',stroke:'#23262a'});
+  const slot={stroke:'#1f2226','stroke-width':14,'stroke-linecap':'round',fill:'none'};
+  el(s,'path',{d:'M36 24V96M36 60H104M70 24V60M104 24V60',...slot});
+  el(s,'path',{d:'M36 24V96M36 60H104M70 24V60M104 24V60',stroke:'#050506','stroke-width':8,'stroke-linecap':'round',fill:'none'});
+  // trayectoria sugerida 2 → 3
+  el(s,'path',{d:'M36 92V60H70V30',stroke:'#ffae1f','stroke-width':1.6,fill:'none','stroke-dasharray':'3 3',filter:glow,class:'blink'});
+  [[36,14,'1'],[36,110,'2'],[70,14,'3'],[104,14,'R']].forEach(([x,y,t])=>el(s,'text',{x,y:y+3,'text-anchor':'middle','font-family':'Saira','font-weight':700,'font-size':12,fill:t==='3'?'#ffae1f':t==='R'?'#3a3e44':'#8a867d'},t));
+  el(s,'text',{x:104,y:84,'text-anchor':'middle','font-family':'Michroma','font-size':5,fill:'#3a3e44','letter-spacing':'.08em'},'—');
+  el(s,'circle',{cx:36,cy:92,r:11,fill:'#2a2d31',stroke:'#ffae1f','stroke-width':1.5,filter:glow});
+  el(s,'circle',{cx:33,cy:89,r:3.5,fill:'#ffffff22'});
+})();
+
+/* sparklines de la tarjeta de sugerencia */
+document.querySelectorAll('.spk').forEach(s=>{const k=s.dataset.k;let d=k==='pct'?S.steps.slice(-10).map(v=>v/META):k==='fc'?S.fc:S.eff;
+  const lo=Math.min(...d),hi=Math.max(...d);
+  if(k==='pct'){d.forEach((v,i)=>{const h=4+16*(v-.8)/(.3);el(s,'rect',{x:i*6,y:21-h,width:4,height:h,fill:v>=.9?'#ffae1f':'#4a4d52'})});
+    el(s,'line',{x1:0,x2:60,y1:21-(4+16*(.1/.3)),y2:21-(4+16*(.1/.3)),stroke:'#ece6d8','stroke-width':.6,'stroke-dasharray':'2 2'});return}
+  el(s,'polyline',{points:d.map((v,i)=>`${i*60/(d.length-1)},${20-18*(v-lo)/(hi-lo)}`).join(' '),fill:'none',stroke:k==='fc'?'#ffae1f':'#3ddc8a','stroke-width':1.4})});
+/* ---------- quema de grasa ---------- */
+const OLEADAS=[[5,1],[5,2],[3,3.6],[5,2],[3,3.6],[5,2],[3,3.6],[4,2],[5,1]];
+const PROF={1:[[5,1],[20,2],[5,1]],2:OLEADAS,3:[[8,1]].concat(...Array(6).fill([[2,4],[2,2]])).concat([[8,2],[5,1]])};
+const ZC={1:'#5d6168',2:'#3ddc8a',3:'#ffae1f',3.6:'#ffae1f',4:'#ff3b24'};
+function blocks(s,pr,W,H,x0,base,cur){const tot=pr.reduce((a,b)=>a+b[0],0);let x=x0;
+  pr.forEach(([m,z],i)=>{const w=W*m/tot,h=H*z/4;el(s,'rect',{x:x+.6,y:base-h,width:Math.max(w-1.2,.8),height:h,rx:1.2,fill:ZC[z],opacity:cur==null?.9:(i<cur?.35:i===cur?1:.8)});x+=w});return tot}
+document.querySelectorAll('.prof').forEach(s=>blocks(s,PROF[s.dataset.p],118,26,0,29));
+(function(){const s=document.getElementById('route'),glow=defs(s);
+  [1,2,3,4].forEach(z=>el(s,'line',{x1:0,x2:340,y1:46-40*z/4,y2:46-40*z/4,stroke:'#1a1c1f','stroke-width':1}));
+  const tot=blocks(s,OLEADAS,340,40,0,46,2);
+  const x=340*(11.2/tot);el(s,'line',{x1:x,x2:x,y1:0,y2:50,stroke:'#ece6d8','stroke-width':1.5,filter:glow});
+  el(s,'path',{d:`M${x-5} 0h10l-5 6z`,fill:'#ece6d8'});
+  ['Z1','Z2','Z3','Z4'].forEach((t,i)=>{});
+  el(s,'text',{x:0,y:57,'font-family':'Michroma','font-size':6,fill:'#6c7078','letter-spacing':'.1em'},'0:00');
+  el(s,'text',{x:340,y:57,'text-anchor':'end','font-family':'Michroma','font-size':6,fill:'#6c7078','letter-spacing':'.1em'},'38:00');
+})();
+(function(){const s=document.getElementById('cruise'),glow=defs(s),cx=75,cy=70,R=56,min=90,max=160,V=v=>-110+220*(v-min)/(max-min);
+  // bandas de zona (Tomás FCmáx 174)
+  [[90,104,'#3a3e44'],[104,122,'#1f6b45'],[122,139,'#6b4a10'],[139,157,'#5a1a12'],[157,160,'#5a1a12']].forEach(([a,b,c])=>el(s,'path',{d:arc(cx,cy,R-5,V(a),V(b)),stroke:c,'stroke-width':8,fill:'none'}));
+  el(s,'path',{d:arc(cx,cy,R-5,V(131),V(139)),stroke:'#ffae1f','stroke-width':8,fill:'none',filter:glow});
+  for(let v=90;v<=160;v+=5){const maj=v%10===0;const [x1,y1]=P(cx,cy,R+3,V(v)),[x2,y2]=P(cx,cy,R+(maj?-1:1),V(v));}
+  [90,104,122,139,157].forEach(v=>{const [x1,y1]=P(cx,cy,R,V(v)),[x2,y2]=P(cx,cy,R-11,V(v));el(s,'line',{x1,y1,x2,y2,stroke:'#bdb8ab','stroke-width':1.2});
+    if(v===157)return;const [tx,ty]=P(cx,cy,R+8,V(v));el(s,'text',{x:tx,y:ty+3,'text-anchor':'middle','font-family':'Saira','font-size':8.5,'font-weight':600,fill:'#8a867d'},v)});
+  needle(s,cx,cy,R-4,V(134),'#ff5a2a',glow,3,8);cap(s,cx,cy,6);
+  el(s,'text',{x:cx,y:cy+30,'text-anchor':'middle','font-family':'Saira','font-weight':700,'font-size':24,'font-stretch':'62%',fill:'#ece6d8'},'134 lpm');
+  el(s,'text',{x:cx,y:cy+40,'text-anchor':'middle','font-family':'Michroma','font-size':5.5,fill:'#3ddc8a','letter-spacing':'.1em'},'DENTRO DEL RANGO');
+})();
+(function(){const s=document.getElementById('weight'),glow=defs(s),w=[91.4,91.0,90.5,90.3,89.6,89.3,89.0],lb=['17/8','24/8','31/8','7/9','14/9','21/9','27/9'],
+  x0=26,x1=330,y0=6,y1=54,lo=88.5,hi=92,X=i=>x0+(x1-x0)*i/6,Y=v=>y1-(y1-y0)*(v-lo)/(hi-lo);
+  [89,90,91].forEach(v=>{el(s,'line',{x1:x0,x2:x1,y1:Y(v),y2:Y(v),stroke:'#1c1f22'});el(s,'text',{x:x0-5,y:Y(v)+3,'text-anchor':'end','font-family':'Saira','font-size':8.5,fill:'#6c7078'},v)});
+  const ma=w.map((_,i)=>{const a=w.slice(Math.max(0,i-2),i+1);return a.reduce((p,c)=>p+c,0)/a.length});
+  el(s,'polyline',{points:ma.map((v,i)=>`${X(i)},${Y(v)}`).join(' '),fill:'none',stroke:'#3ddc8a','stroke-width':1.6,'stroke-dasharray':'4 3',opacity:.8});
+  el(s,'polyline',{points:w.map((v,i)=>`${X(i)},${Y(v)}`).join(' '),fill:'none',stroke:'#ffae1f','stroke-width':2,filter:glow});
+  w.forEach((v,i)=>{el(s,'circle',{cx:X(i),cy:Y(v),r:2.6,fill:'#0e0f11',stroke:'#ffae1f','stroke-width':1.5});el(s,'text',{x:X(i),y:68,'text-anchor':'middle','font-family':'Michroma','font-size':5.5,fill:'#6c7078'},lb[i])});
+  el(s,'text',{x:x1,y:Y(91.9),'text-anchor':'end','font-family':'Michroma','font-size':5.5,fill:'#3ddc8a','letter-spacing':'.08em'},'- - MEDIA MÓVIL 3 SEM');
+})();
+</script>
+</body>
+</html>

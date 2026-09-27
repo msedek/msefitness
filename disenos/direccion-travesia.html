@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Travesía · msefitness</title>
+<link rel="stylesheet" href="fonts/barlowc.css">
+<link rel="stylesheet" href="fonts/spectral.css">
+<style>
+:root{
+  --paper:#edf1e8;      /* blanco verdoso de carta */
+  --paper-2:#e2e8da;
+  --paper-3:#d5dccb;
+  --ink:#3a2c1f;        /* tinta sepia */
+  --ink-2:#6b5641;
+  --ink-3:#9a8670;
+  --contour:#a8733a;    /* curvas de nivel */
+  --contour-2:#cfae84;
+  --forest:#6f9a5b;
+  --forest-2:#a9c492;
+  --water:#3b7aa3;
+  --water-2:#b7d3e1;
+  --route:#b8382a;      /* ruta roja */
+  --z1:#bcd5a3; --z2:#dfe2a6; --z3:#e6c586; --z4:#d19558; --z5:#a95f42;
+  --cond:'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --serif:'Spectral', Georgia, serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper-3);color:var(--ink);font-family:var(--cond);font-size:17px;line-height:1.3;
+  font-variant-numeric:tabular-nums;}
+svg{display:block}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ---------- Lámina ---------- */
+.board{min-height:100vh;padding:44px 48px 64px;position:relative;overflow:hidden}
+.board-bg{position:absolute;inset:0;z-index:0;opacity:.55;pointer-events:none}
+.sheet-head{position:relative;z-index:1;display:grid;grid-template-columns:auto 1fr auto;gap:40px;align-items:end;
+  border:1.5px solid var(--ink);outline:1px solid var(--ink);outline-offset:4px;background:var(--paper);
+  padding:22px 28px;margin:6px 6px 48px}
+.sheet-head .tag{font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+.sheet-head h1{font-family:var(--cond);font-weight:800;font-size:92px;line-height:.82;letter-spacing:.06em;text-transform:uppercase;margin-top:8px}
+.sheet-head .concept{font-family:var(--serif);font-style:italic;font-size:26px;line-height:1.25;color:var(--ink);max-width:620px}
+.sheet-head .concept small{display:block;font-style:normal;font-family:var(--cond);font-size:15px;color:var(--ink-2);letter-spacing:.04em;margin-top:10px;line-height:1.4}
+.legend{display:grid;gap:10px;min-width:280px}
+.legend h3{font-size:12px;letter-spacing:.3em;text-transform:uppercase;font-weight:700;border-bottom:1px solid var(--ink);padding-bottom:4px}
+.swatches{display:flex;gap:0}
+.swatches span{width:34px;height:26px;border:1px solid var(--ink);margin-left:-1px}
+.swatches + .cap{font-size:12px;color:var(--ink-2);letter-spacing:.05em}
+.type-row{display:flex;align-items:baseline;gap:14px}
+.type-row .a{font-family:var(--cond);font-weight:800;font-size:34px;letter-spacing:.08em}
+.type-row .b{font-family:var(--serif);font-style:italic;font-size:30px}
+.type-row .c{font-size:12px;color:var(--ink-2);line-height:1.25}
+
+.phones{position:relative;z-index:1;display:flex;gap:56px 40px;justify-content:center;align-items:flex-start;flex-wrap:wrap;max-width:1300px;margin:0 auto}
+.pcol{display:flex;flex-direction:column;gap:14px;align-items:center}
+.pcap{font-size:13px;letter-spacing:.26em;text-transform:uppercase;font-weight:700;color:var(--ink)}
+.pcap b{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:0;text-transform:none;font-size:16px;color:var(--ink-2);margin-left:6px}
+.phone{width:390px;min-height:844px;background:#1f1a15;border-radius:52px;padding:11px;box-shadow:0 1px 0 #000, 0 30px 60px -30px rgba(40,30,20,.55)}
+.screen{min-height:822px;background:var(--paper);border-radius:42px;overflow:hidden;display:flex;flex-direction:column;position:relative}
+
+/* ---------- Piezas de pantalla ---------- */
+.status{display:flex;justify-content:space-between;padding:16px 30px 6px;font-weight:600;font-size:15px}
+.status i{font-style:normal;letter-spacing:.1em}
+.content{flex:1;padding:6px 20px 18px;display:flex;flex-direction:column;gap:16px}
+.titleblock{border:1.5px solid var(--ink);padding:10px 12px 9px;display:grid;grid-template-columns:1fr auto;gap:2px 10px;background:var(--paper)}
+.titleblock .k{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+.titleblock h2{font-family:var(--serif);font-style:italic;font-weight:600;font-size:27px;line-height:1.05}
+.titleblock .r{grid-row:1 / span 2;grid-column:2;text-align:right;align-self:center;font-size:13px;line-height:1.2;color:var(--ink-2)}
+.titleblock .r b{display:block;color:var(--ink);font-size:18px;letter-spacing:.04em}
+
+.sec{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--ink);padding-bottom:3px}
+.sec h4{font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:700}
+.sec span{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-2)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink-3);border-bottom:1px solid var(--ink-3)}
+.stats div{padding:7px 0 6px;text-align:center;border-left:1px dotted var(--ink-3)}
+.stats div:first-child{border-left:0}
+.stats b{display:block;font-size:24px;font-weight:700;line-height:1}
+.stats small{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+
+.card{border:1px solid var(--ink-3);background:var(--paper)}
+.note{font-family:var(--serif);font-size:15px;line-height:1.35;color:var(--ink)}
+.note em{font-style:italic}
+
+.cta{display:flex;align-items:center;justify-content:space-between;background:var(--route);color:#fff5ee;padding:15px 18px;
+  border:1.5px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-weight:700;font-size:21px;letter-spacing:.14em;text-transform:uppercase}
+.cta small{font-family:var(--serif);font-style:italic;text-transform:none;letter-spacing:0;font-weight:400;font-size:15px;opacity:.9}
+.btn2{display:block;text-align:center;border:1.5px solid var(--ink);padding:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:16px}
+
+.tabbar{display:grid;grid-template-columns:repeat(5,1fr);border-top:1.5px solid var(--ink);background:var(--paper-2);padding:8px 8px 22px}
+.tabbar a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);text-decoration:none;font-weight:600}
+.tabbar a.on{color:var(--route)}
+.tabbar{position:relative}
+.tabbar::after{content:'';position:absolute;left:50%;bottom:7px;width:120px;height:4px;margin-left:-60px;border-radius:2px;background:var(--ink)}
+.tabbar svg{width:26px;height:26px}
+
+.teaser{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:11px 12px;border:1px dashed var(--forest);background:#e4eddc}
+.teaser b{display:block;font-size:17px;letter-spacing:.04em}
+.teaser span{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-2)}
+.teaser .go{font-size:22px;color:var(--forest)}
+
+/* registrar */
+.field{display:grid;grid-template-columns:1fr auto;align-items:end;border-bottom:1px solid var(--ink-3);padding:8px 0 12px}
+.field .lab{font-size:12.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;color:var(--ink-2)}
+.field .val{font-size:64px;font-weight:700;line-height:.9;letter-spacing:-.01em;margin-top:4px}
+.field .val small{font-size:22px;font-weight:500;color:var(--ink-2);margin-left:6px;letter-spacing:.06em}
+.field .hint{font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--ink-3)}
+.step{display:flex;gap:8px}
+.step button{width:52px;height:52px;border:1.5px solid var(--ink);font-size:28px;font-weight:500;display:grid;place-items:center;background:var(--paper)}
+.step button.p{background:var(--ink);color:var(--paper)}
+.optional{border:1px dashed var(--ink-3);padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.optional b{font-size:15px;letter-spacing:.14em;text-transform:uppercase}
+.optional span{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-2)}
+.preview{border:1.5px solid var(--ink);background:var(--paper-2);padding:12px 12px 10px}
+.pv-top{display:flex;justify-content:space-between;align-items:baseline}
+.pv-top .big{font-size:44px;font-weight:800;line-height:.9}
+.pv-top .big small{font-size:16px;font-weight:500;color:var(--ink-2);letter-spacing:.06em;margin-left:4px}
+.pv-top .pct{text-align:right;font-size:13px;color:var(--ink-2);letter-spacing:.06em}
+.pv-top .pct b{display:block;font-size:26px;color:var(--forest);font-weight:800;letter-spacing:0}
+
+/* progreso */
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.kv .n{font-size:32px;font-weight:800;line-height:1}
+.kv .n small{font-size:15px;font-weight:500;color:var(--ink-2);margin-left:3px}
+.kv .t{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-2);text-align:right}
+.delta{color:var(--forest);font-weight:700}
+.recs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--ink-3)}
+.recs div{padding:9px 8px;border-left:1px dotted var(--ink-3)}
+.recs div:first-child{border-left:0}
+.recs b{display:block;font-size:22px;font-weight:800;line-height:1}
+.recs small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin-top:3px}
+.recs i{font-family:var(--serif);font-size:12.5px;color:var(--ink-3)}
+
+/* plan */
+.plans{display:grid;gap:0;border:1.5px solid var(--ink)}
+.plan{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-top:1px solid var(--ink-3)}
+.plan:first-child{border-top:0}
+.plan .sw{width:30px;height:30px;border:1px solid var(--ink)}
+.plan b{font-size:19px;letter-spacing:.06em;text-transform:uppercase;display:block;line-height:1.05}
+.plan span{font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--ink-2)}
+.plan .m{text-align:right;font-size:22px;font-weight:800;line-height:1}
+.plan .m small{display:block;font-size:11px;font-weight:600;letter-spacing:.14em;color:var(--ink-2);text-transform:uppercase}
+.plan.cur{background:#f4ead8;box-shadow:inset 4px 0 0 var(--route)}
+.sug{border:1.5px solid var(--forest);background:#e4eddc;padding:13px 14px 14px;display:grid;gap:10px;position:relative}
+.sug .k{font-size:11.5px;letter-spacing:.26em;text-transform:uppercase;font-weight:700;color:var(--forest)}
+.sug h3{font-family:var(--serif);font-style:italic;font-weight:600;font-size:24px;line-height:1.08}
+.ev{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;border-top:1px dotted var(--forest);padding-top:8px}
+.ev p{font-size:16px;line-height:1.2}
+.ev p i{display:block;font-family:var(--serif);font-size:13px;color:var(--ink-2)}
+.sug .acts{display:grid;grid-template-columns:1.3fr 1fr;gap:8px;margin-top:4px}
+.sug .acts .a1{background:var(--forest);color:#f3f8ee;border:1.5px solid var(--ink);padding:12px 8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:15px;box-shadow:2px 2px 0 var(--ink)}
+.sug .acts .a2{border:1.5px solid var(--ink);padding:12px 8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:15px;background:var(--paper)}
+.cordada{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--ink-3)}
+.cordada > div{padding:10px 12px;display:grid;gap:3px}
+.cordada > div + div{border-left:1px dotted var(--ink-3)}
+.cordada b{font-size:19px;letter-spacing:.06em;text-transform:uppercase}
+.cordada span{font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--ink-2)}
+.cordada .n{font-size:24px;font-weight:800}
+
+/* quema de grasa */
+.guide{background:var(--ink);color:var(--paper);padding:14px 14px 12px;display:grid;gap:10px;box-shadow:3px 3px 0 var(--route)}
+.guide .top{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;letter-spacing:.24em;text-transform:uppercase;font-weight:700;color:var(--contour-2)}
+.guide .top span:last-child{font-family:var(--serif);font-style:italic;letter-spacing:0;text-transform:none;font-size:14px;font-weight:400}
+.guide .mid{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:end}
+.guide .clock{font-size:78px;font-weight:800;line-height:.8;letter-spacing:-.01em}
+.guide .blk b{display:block;white-space:nowrap;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:var(--z3);line-height:1}
+.guide .blk span{font-family:var(--serif);font-style:italic;font-size:14.5px;color:var(--paper-3)}
+.guide .next{display:flex;justify-content:space-between;border-top:1px dotted var(--ink-3);padding-top:8px;font-size:15px}
+.guide .next i{font-family:var(--serif);color:var(--paper-3)}
+.guide .ctrl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.guide .ctrl button{border:1.5px solid var(--paper-3);color:var(--paper);padding:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:14px}
+.guide .ctrl button:first-child{background:var(--paper);color:var(--ink)}
+.routes{display:grid;gap:0;border:1.5px solid var(--ink)}
+.rt{padding:9px 12px 6px;border-top:1px solid var(--ink-3)}
+.rt:first-child{border-top:0}
+.rt.cur{background:#f4ead8;box-shadow:inset 4px 0 0 var(--route)}
+.rt .h{display:flex;justify-content:space-between;align-items:baseline}
+.rt .h b{font-size:17px;letter-spacing:.06em;text-transform:uppercase}
+.rt .h b i{font-family:var(--serif);text-transform:none;letter-spacing:0;font-weight:400;font-size:15px;color:var(--ink-2);margin-left:4px}
+.rt .h span{font-size:13.5px;color:var(--ink-2);letter-spacing:.04em}
+
+.foot{position:relative;z-index:1;margin:44px 6px 0;display:flex;justify-content:space-between;font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);border-top:1px solid var(--ink);padding-top:10px}
+.foot span:last-child{font-family:var(--serif);font-style:italic;letter-spacing:0;text-transform:none;font-size:14px}
+
+/* ---------- Teléfono real ---------- */
+@media (max-width:600px){
+  .board{padding:0}
+  .board-bg{display:none}
+  .sheet-head{grid-template-columns:1fr;gap:14px;margin:12px 16px 20px;padding:16px}
+  .sheet-head h1{font-size:60px}
+  .sheet-head .concept{font-size:20px}
+  .legend{min-width:0}
+  .phones{gap:0;display:block}
+  .pcol{gap:0;align-items:stretch}
+  .pcap{padding:14px 16px;background:var(--ink);color:var(--paper);border-top:4px solid var(--route)}
+  .pcap b{color:var(--paper-3)}
+  .phone{width:100%;min-height:0;border-radius:0;padding:0;background:none;box-shadow:none}
+  .screen{border-radius:0;min-height:0}
+  .status{display:none}
+  .content{padding:14px 16px 18px}
+  .foot{margin:20px 16px 24px;flex-direction:column;gap:6px}
+}
+</style>
+</head>
+<body>
+<main class="board">
+  <svg class="board-bg" id="boardbg" preserveAspectRatio="xMidYMid slice"></svg>
+
+  <header class="sheet-head">
+    <div>
+      <div class="tag">msefitness · dirección 3 · hoja 33°27′S</div>
+      <h1>Travesía</h1>
+    </div>
+    <p class="concept">Cada sesión es un mapa: el pulso dibuja el relieve, la meta es la cumbre y los kilómetros avanzan por la Ruta 5.
+      <small>Curvas de nivel como medidor · tintes hipsométricos como zonas cardíacas · la bitácora se lee como una carta topográfica.</small></p>
+    <div class="legend">
+      <h3>Leyenda</h3>
+      <div class="swatches">
+        <span style="background:var(--paper)"></span><span style="background:var(--forest-2)"></span><span style="background:var(--forest)"></span>
+        <span style="background:var(--z3)"></span><span style="background:var(--contour)"></span><span style="background:var(--water)"></span>
+        <span style="background:var(--route)"></span><span style="background:var(--ink)"></span>
+      </div>
+      <div class="cap">papel · bosque · ocre · curva · agua · ruta · tinta</div>
+      <div class="type-row"><span class="a">RELIEVE 7.200</span><span class="b">Talca</span></div>
+      <div class="c type-row"><span class="c">Barlow Condensed — rótulos y cifras<br>Spectral itálica — topónimos y notas</span></div>
+    </div>
+  </header>
+
+  <section class="phones">
+
+    <!-- ================= 1 · INICIO ================= -->
+    <div class="pcol">
+      <div class="pcap">1 · Inicio <b>la cumbre de ayer y la semana</b></div>
+      <div class="phone"><div class="screen">
+        <div class="status"><span>10:24</span><i>●●● ▮</i></div>
+        <div class="content">
+          <div class="titleblock">
+            <span class="k">Bitácora · plan medio</span>
+            <h2>Hola, Tomás</h2>
+            <div class="r">dom 27 sep<b>Precordillera</b></div>
+          </div>
+
+          <div>
+            <div class="sec"><h4>Última cumbre</h4><span>sáb 26 sep</span></div>
+            <svg id="summit" viewBox="0 0 350 250" width="100%"></svg>
+            <div class="stats">
+              <div><b>45</b><small>min</small></div>
+              <div><b>16,0</b><small>km</small></div>
+              <div><b>136</b><small>lpm</small></div>
+              <div><b>Z3</b><small>78 %</small></div>
+            </div>
+            <p class="note" style="font-size:13.5px;color:var(--ink-2);margin-top:5px">≈ 627 kcal <em>(estimado)</em> · 21,3 km/h · 2,61 m por latido</p>
+          </div>
+
+          <div>
+            <div class="sec"><h4>Etapas de la semana</h4><span>4 de 4 · plan cumplido</span></div>
+            <svg id="weektrail" viewBox="0 0 350 78" width="100%"></svg>
+          </div>
+
+          <div>
+            <div class="sec"><h4>Travesía Ruta 5</h4><span>297,1 km acumulados</span></div>
+            <svg id="ministrip" viewBox="0 0 350 62" width="100%"></svg>
+            <p class="note" style="margin-top:4px">Pasaste <em>Talca</em>. Te quedan ≈8 km para <em>Linares</em>.</p>
+          </div>
+
+          <div class="teaser">
+            <svg viewBox="0 0 44 44"><path d="M4 38 L16 20 L22 27 L30 12 L40 38 Z" fill="var(--forest-2)" stroke="var(--ink)" stroke-width="1.4"/><path d="M27 17 L30 12 L33 18" fill="#fff" stroke="var(--ink)" stroke-width="1.2"/></svg>
+            <div><b>Paso abierto a Cordillera</b><span>tus datos dicen: listo para Avanzado</span></div>
+            <div class="go">→</div>
+          </div>
+
+          <button class="cta">Registrar sesión <small>hoy, dom 27</small></button>
+        </div>
+        <nav class="tabbar" data-on="0"></nav>
+      </div></div>
+    </div>
+
+    <!-- ================= 2 · REGISTRAR ================= -->
+    <div class="pcol">
+      <div class="pcap">2 · Registrar <b>tres cifras, un pulgar</b></div>
+      <div class="phone"><div class="screen">
+        <div class="status"><span>19:52</span><i>●●● ▮</i></div>
+        <div class="content">
+          <div class="titleblock">
+            <span class="k">Nueva etapa</span>
+            <h2>dom 27 sep</h2>
+            <div class="r">cambiar<b>fecha ▾</b></div>
+          </div>
+
+          <div class="field">
+            <div><div class="lab">Tiempo</div><div class="val">44<small>min</small></div></div>
+            <div class="step"><button>−</button><button class="p">+</button></div>
+          </div>
+          <div class="field">
+            <div><div class="lab">Distancia</div><div class="val">15,6<small>km</small></div><div class="hint">la que marca la bici</div></div>
+            <div class="step"><button>−</button><button class="p">+</button></div>
+          </div>
+          <div class="field">
+            <div><div class="lab">Pulso promedio</div><div class="val">137<small>lpm</small></div></div>
+            <div class="step"><button>−</button><button class="p">+</button></div>
+          </div>
+
+          <div class="optional"><div><b>+ Opcionales</b><br><span>pulso máximo · esfuerzo 1–10 · nota</span></div><span>▾</span></div>
+
+          <div class="preview">
+            <div class="pv-top">
+              <div class="big">7.040<small>pasos eq</small></div>
+              <div class="pct">de tu meta 7.000<b>101 %</b></div>
+            </div>
+            <svg id="zonebar" viewBox="0 0 330 74" width="100%" style="margin-top:8px"></svg>
+            <p class="note" style="font-size:14px;margin-top:4px">Altitud <em>Z3 · 79 % de tu FCmáx (174)</em> — terreno ideal para tu plan. 21,3 km/h · 2,59 m por latido.</p>
+          </div>
+
+          <button class="cta">Guardar etapa <small>cumbre ✓</small></button>
+        </div>
+        <nav class="tabbar" data-on="1"></nav>
+      </div></div>
+    </div>
+
+    <!-- ================= 3 · PROGRESO ================= -->
+    <div class="pcol">
+      <div class="pcap">3 · Progreso <b>relieve de 6 semanas</b></div>
+      <div class="phone"><div class="screen">
+        <div class="status"><span>10:25</span><i>●●● ▮</i></div>
+        <div class="content">
+          <div class="titleblock">
+            <span class="k">Carta de progreso</span>
+            <h2>17 ago — 26 sep</h2>
+            <div class="r">24 etapas<b>297,1 km</b></div>
+          </div>
+
+          <div>
+            <div class="sec"><h4>Perfil · pasos eq</h4><span>cota 7.000 = tu meta</span></div>
+            <svg id="profile" viewBox="0 0 350 170" width="100%"></svg>
+          </div>
+
+          <div>
+            <div class="kv"><div class="n">136<small>lpm</small></div><div class="t">pulso promedio<br><span class="delta">−10 lpm</span> desde 146</div></div>
+            <svg id="hrline" viewBox="0 0 350 92" width="100%"></svg>
+            <p class="note" style="font-size:14px">El terreno se aplana: mismo esfuerzo, menos pulso.</p>
+          </div>
+
+          <div>
+            <div class="kv"><div class="n">2,61<small>m / latido</small></div><div class="t">eficiencia cardíaca<br><span class="delta">+20 %</span> desde 2,17</div></div>
+            <svg id="effline" viewBox="0 0 350 80" width="100%"></svg>
+          </div>
+
+          <div>
+            <div class="sec"><h4>Travesía · Ruta 5 Sur</h4><span>distancias aprox.</span></div>
+            <svg id="routemap" viewBox="0 0 350 400" width="100%"></svg>
+          </div>
+
+          <div>
+            <div class="sec"><h4>Constancia</h4><span>racha: 6 semanas</span></div>
+            <svg id="calendar" viewBox="0 0 350 214" width="100%"></svg>
+          </div>
+
+          <div>
+            <div class="sec"><h4>Tiempo por zona</h4><span>880 min en total</span></div>
+            <svg id="zones" viewBox="0 0 350 58" width="100%"></svg>
+          </div>
+
+          <div>
+            <div class="sec" style="margin-bottom:8px"><h4>Cotas máximas</h4><span>récords</span></div>
+            <div class="recs">
+              <div><b>45 min</b><small>más larga</small><i>26 sep</i></div>
+              <div><b>16,0 km</b><small>más lejos</small><i>26 sep</i></div>
+              <div><b>2,61</b><small>m / latido</small><i>25 y 26 sep</i></div>
+            </div>
+          </div>
+        </div>
+        <nav class="tabbar" data-on="2"></nav>
+      </div></div>
+    </div>
+
+    <!-- ================= 4 · PLAN Y NIVEL ================= -->
+    <div class="pcol">
+      <div class="pcap">4 · Plan y nivel <b>el paso hacia arriba</b></div>
+      <div class="phone"><div class="screen">
+        <div class="status"><span>10:26</span><i>●●● ▮</i></div>
+        <div class="content">
+          <div class="titleblock">
+            <span class="k">Corte del terreno</span>
+            <h2>Tres alturas</h2>
+            <div class="r">estás en<b>Medio</b></div>
+          </div>
+
+          <svg id="section" viewBox="0 0 350 188" width="100%"></svg>
+
+          <div class="sug">
+            <div class="k">Sugerencia · análisis de tus datos</div>
+            <h3>Paso abierto: estás listo para Avanzado</h3>
+            <div class="ev"><p>7 de 10 etapas sobre el 90 % de la meta<i>necesitas 7 · últimas 10 sesiones</i></p><svg id="dots" viewBox="0 0 110 22" width="110"></svg></div>
+            <div class="ev"><p>Pulso 146 → 136 lpm<i>bajando con más minutos</i></p><svg id="sp1" viewBox="0 0 110 30" width="110"></svg></div>
+            <div class="ev"><p>Eficiencia 2,17 → 2,61 m/latido<i>+20 % · subiendo</i></p><svg id="sp2" viewBox="0 0 110 30" width="110"></svg></div>
+            <div class="acts"><button class="a1">Subir a Avanzado</button><button class="a2">Seguir en Medio</button></div>
+            <p class="note" style="font-size:13.5px;color:var(--ink-2)">La app sugiere; tú decides. Nueva meta: 10.000 pasos eq, 5 sesiones por semana.</p>
+          </div>
+
+          <div class="plans">
+            <div class="plan"><div class="sw" style="background:var(--z1)"></div><div><b>Principiante · Valle</b><span>3 ses/sem · 25–35 min · Z2</span></div><div class="m">4.000<small>pasos eq</small></div></div>
+            <div class="plan cur"><div class="sw" style="background:var(--z3)"></div><div><b>Medio · Precordillera</b><span>4 ses/sem · 40–50 min · Z3 — tu plan</span></div><div class="m">7.000<small>pasos eq</small></div></div>
+            <div class="plan"><div class="sw" style="background:var(--z5)"></div><div><b>Avanzado · Cordillera</b><span>5 ses/sem · 55–65 min · Z3 + Z4</span></div><div class="m">10.000<small>tope</small></div></div>
+          </div>
+
+          <div>
+            <div class="sec" style="margin-bottom:8px"><h4>Cordada</h4><span>cada uno en su altura</span></div>
+            <div class="cordada">
+              <div><b>Tomás</b><span>Medio · Precordillera</span><div class="n">6 sem</div><span>de racha · 7.200 ayer</span></div>
+              <div><b>Ana</b><span>Principiante · Valle</span><div class="n">3 sem</div><span>de racha · ≈4.000 por etapa</span></div>
+            </div>
+          </div>
+        </div>
+        <nav class="tabbar" data-on="4"></nav>
+      </div></div>
+    </div>
+
+    <!-- ================= 5 · QUEMA DE GRASA ================= -->
+    <div class="pcol">
+      <div class="pcap">5 · Quema de grasa <b>la sesión es un paso de montaña</b></div>
+      <div class="phone"><div class="screen">
+        <div class="status"><span>19:14</span><i>●●● ▮</i></div>
+        <div class="content">
+          <div class="titleblock">
+            <span class="k">Programa guiado</span>
+            <h2>Quema de grasa</h2>
+            <div class="r">nivel medio<b>Oleadas</b></div>
+          </div>
+
+          <div class="guide">
+            <div class="top"><span>En ruta · modo guiado</span><span>11:12 de 38:00</span></div>
+            <div class="mid">
+              <div class="clock">1:48</div>
+              <div class="blk"><b>Bloque 3 de 9</b><span>subida corta · Z3 alto<br>mantén 131–139 lpm</span></div>
+            </div>
+            <svg id="gauge" viewBox="0 0 330 58" width="100%"></svg>
+            <svg id="guideprof" viewBox="0 0 330 76" width="100%"></svg>
+            <div class="next"><span>Después: <b>5′ Z2</b> · 104–122 lpm</span><i>bajada suave</i></div>
+            <div class="ctrl"><button>Pausa</button><button>Terminar</button></div>
+          </div>
+          <p class="note" style="font-size:13.5px;color:var(--ink-2);margin-top:-4px">Al terminar se pre-llena tu registro con tiempo y pulso promedio; tú anotas la distancia. Gasto ahora ≈ 14 kcal/min; la sesión completa ≈ 466 kcal <em>(estimado, fórmula de Keytel)</em>.</p>
+
+          <div>
+            <div class="sec" style="margin-bottom:8px"><h4>Tres rutas</h4><span>la forma de cada sesión</span></div>
+            <div class="routes">
+              <div class="rt"><div class="h"><b>Iniciante<i>Base quemadora</i></b><span>30 min · 3/sem</span></div><svg class="sprof" data-lv="0" viewBox="0 0 326 58" width="100%"></svg></div>
+              <div class="rt cur"><div class="h"><b>Medio<i>Oleadas — tu nivel</i></b><span>38 min · 4/sem</span></div><svg class="sprof" data-lv="1" viewBox="0 0 326 58" width="100%"></svg></div>
+              <div class="rt"><div class="h"><b>Avanzado<i>Intervalos + fondo</i></b><span>45 min · 4/sem</span></div><svg class="sprof" data-lv="2" viewBox="0 0 326 58" width="100%"></svg></div>
+            </div>
+            <svg id="proflegend" viewBox="0 0 350 22" width="100%" style="margin-top:6px"></svg>
+          </div>
+
+          <div>
+            <div class="sec"><h4>Avance del nivel</h4><span>5 de 8 sesiones</span></div>
+            <svg id="lvdots" viewBox="0 0 350 40" width="100%"></svg>
+            <p class="note" style="font-size:13.5px;color:var(--ink-2)">Subes a <em>Intervalos + fondo</em> con 8 sesiones sobre el 80 % del tiempo en zona y sin alertas de pulso.</p>
+          </div>
+
+          <div>
+            <div class="kv"><div class="n">89,0<small>kg</small></div><div class="t">peso semanal<br><span class="delta">−2,4 kg</span> en 6 semanas</div></div>
+            <svg id="weight" viewBox="0 0 350 150" width="100%"></svg>
+            <p class="note" style="font-size:14px">Bajar de peso depende sobre todo del déficit calórico: la bici suma, la mesa decide.</p>
+          </div>
+        </div>
+        <nav class="tabbar" data-on="3"></nav>
+      </div></div>
+    </div>
+
+  </section>
+
+  <footer class="foot"><span>msefitness · lámina 3 de 6 · Travesía</span><span>Escala: 1 sesión ≈ 1 etapa · distancias de Ruta 5 aproximadas</span></footer>
+</main>
+
+<script>
+const NS='http://www.w3.org/2000/svg';
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function txt(parent,x,y,s,attrs={}){const t=el('text',Object.assign({x,y},attrs),parent);t.textContent=s;return t}
+// formato chileno: miles con punto, decimales con coma
+function fmt(n,d=0){const [i,f]=n.toFixed(d).split('.');return i.replace(/\B(?=(\d{3})+(?!\d))/g,'.')+(f?','+f:'')}
+
+// ---- datos SPEC: fecha, min, km, fc, zona, pasos, %meta, m/latido
+const S=[
+['2026-08-17',30,9.5,146,4,4800,69,2.17],['2026-08-19',31,9.9,149,4,4960,71,2.14],['2026-08-21',31,9.9,145,4,4960,71,2.20],
+['2026-08-22',34,10.9,145,4,5440,78,2.21],['2026-08-24',32,10.4,144,4,5120,73,2.26],['2026-08-26',33,10.7,147,4,5280,75,2.21],
+['2026-08-28',33,10.8,143,4,5280,75,2.29],['2026-08-29',34,11.2,143,4,5440,78,2.30],['2026-08-31',37,12.2,143,4,5920,85,2.31],
+['2026-09-02',29,9.6,145,4,4640,66,2.28],['2026-09-04',36,12.0,142,4,5760,82,2.35],['2026-09-05',36,12.1,141,4,5760,82,2.38],
+['2026-09-07',37,12.5,141,4,5920,85,2.40],['2026-09-09',39,13.2,143,4,6240,89,2.37],['2026-09-11',38,13.0,140,4,6080,87,2.44],
+['2026-09-12',38,13.0,139,3,6080,87,2.46],['2026-09-14',39,13.4,139,3,6240,89,2.47],['2026-09-16',40,13.8,142,4,6400,91,2.43],
+['2026-09-18',42,14.6,138,3,6720,96,2.52],['2026-09-19',41,14.3,138,3,6560,94,2.53],['2026-09-21',41,14.4,137,3,6560,94,2.56],
+['2026-09-23',42,14.8,140,4,6720,96,2.52],['2026-09-25',42,14.9,136,3,6720,96,2.61],['2026-09-26',45,16.0,136,3,7200,103,2.61]];
+
+// curva de nivel orgánica
+function blob(cx,cy,r,seed,amp=1,n=90){
+  let d='';for(let i=0;i<=n;i++){const t=i/n*Math.PI*2;
+    const rr=r*(1+amp*(.07*Math.sin(2*t+seed)+.05*Math.sin(3*t+seed*1.7)+.03*Math.sin(5*t+seed*2.3)));
+    d+=(i?'L':'M')+(cx+rr*Math.cos(t)).toFixed(1)+' '+(cy+rr*.78*Math.sin(t)).toFixed(1)}
+  return d+'Z'}
+
+// ---------- fondo de lámina: curvas de nivel ----------
+(function(){
+  const s=document.getElementById('boardbg');const W=1800,H=1400;s.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const hills=[[260,1050,520,1.1],[1500,380,600,2.4],[980,1250,380,4.2],[1650,1200,300,.6]];
+  hills.forEach(([cx,cy,R,sd])=>{for(let k=0;k<16;k++){const r=R*(1-k/17);
+    el('path',{d:blob(cx+k*5,cy-k*4,r,sd+k*.12,1.3),fill:'none',stroke:k%5==0?css('--contour'):css('--contour-2'),'stroke-width':k%5==0?1.4:.8},s)}});
+  // agua
+  for(let k=0;k<5;k++)el('path',{d:`M${-20} ${240+k*14} C 200 ${200+k*14}, 360 ${300+k*14}, 620 ${230+k*14}`,fill:'none',stroke:css('--water'),'stroke-width':.8,opacity:.5},s);
+})();
+
+// ---------- 1 · cumbre (medidor de curvas de nivel) ----------
+(function(){
+  const s=document.getElementById('summit');const cx=150,cy=128;
+  const tints=['#d9e6c9','#c9dcb2','#dfe2a6','#e9d9a0','#e6c586','#dcad73','#cf9a62'];
+  const levels=7, reached=7200;
+  for(let k=0;k<levels;k++){
+    const r=118-k*15.5, ox=cx+k*4, oy=cy-k*3.4;
+    const on=(k+1)*1000<=reached;
+    el('path',{d:blob(ox,oy,r,1.3+k*.18,1.1),fill:on?tints[k]:css('--paper'),stroke:css('--contour'),'stroke-width':k==6?2:1},s);
+  }
+  // curva intermedia fina
+  for(let k=0;k<levels-1;k++){const r=118-k*15.5-7.7;el('path',{d:blob(cx+k*4+2,cy-k*3.4-1.7,r,1.39+k*.18,1.1),fill:'none',stroke:css('--contour-2'),'stroke-width':.6},s)}
+  // etiquetas de cota
+  [1,3].forEach(k=>{const r=118-(k-1)*15.5;const x=cx+(k-1)*4-r*.97, y=cy-(k-1)*3.4+4;
+    const g=el('g',{},s);el('rect',{x:x-15,y:y-10,width:30,height:13,fill:tints[k-1]},g);
+    txt(g,x,y,fmt(k*1000),{'font-size':11,'text-anchor':'middle',fill:css('--contour'),'font-family':'Barlow Condensed','font-weight':600})});
+  // cumbre
+  const px=cx+24,py=cy-20.4;
+  el('path',{d:`M${px-9} ${py+1} L${px} ${py-14} L${px+9} ${py+1}Z`,fill:css('--ink')},s);
+  txt(s,px,py+34,'7.200',{'text-anchor':'middle','font-size':40,'font-weight':800,'font-family':'Barlow Condensed',fill:css('--ink')});
+  txt(s,px,py+50,'pasos eq',{'text-anchor':'middle','font-size':13,'font-family':'Barlow Condensed','letter-spacing':'2',fill:css('--ink-2')});
+  // cartela derecha
+  const g=el('g',{transform:'translate(282,20)'},s);
+  txt(g,0,0,'CUMBRE',{'font-size':11,'letter-spacing':2.5,'font-weight':700,fill:css('--ink-2'),'font-family':'Barlow Condensed'});
+  txt(g,0,26,'103 %',{'font-size':28,'font-weight':800,fill:css('--forest'),'font-family':'Barlow Condensed'});
+  txt(g,0,42,'de 7.000',{'font-size':13,'font-style':'italic','font-family':'Spectral',fill:css('--ink-2')});
+  // rosa de los vientos discreta
+  const r=el('g',{transform:'translate(318,214)'},s);
+  el('path',{d:'M0 -16 L4 0 L0 16 L-4 0Z',fill:'none',stroke:css('--ink'),'stroke-width':1},r);
+  el('path',{d:'M0 -16 L4 0 L-4 0Z',fill:css('--ink')},r);
+  txt(r,0,-20,'N',{'text-anchor':'middle','font-size':11,'font-weight':700,'font-family':'Barlow Condensed',fill:css('--ink')});
+})();
+
+// ---------- 1 · semana como sendero ----------
+(function(){
+  const s=document.getElementById('weektrail');
+  const days=[['lun','21',6560],['mar','22',0],['mié','23',6720],['jue','24',0],['vie','25',6720],['sáb','26',7200],['dom','27',-1]];
+  const xs=days.map((d,i)=>22+i*51);
+  el('path',{d:`M${xs[0]} 34 `+xs.slice(1).map((x,i)=>`Q ${x-25} ${i%2?22:46} ${x} 34`).join(' '),fill:'none',stroke:css('--route'),'stroke-width':2,'stroke-dasharray':'6 4'},s);
+  days.forEach((d,i)=>{const x=xs[i];
+    if(d[2]>0){const g=el('g',{},s);el('line',{x1:x,y1:34,x2:x,y2:6,stroke:css('--ink'),'stroke-width':1.4},g);
+      el('path',{d:`M${x} 6 L${x+15} 11 L${x} 16Z`,fill:d[2]>=7000?css('--forest'):css('--z3'),stroke:css('--ink'),'stroke-width':.8},g);
+      el('circle',{cx:x,cy:34,r:5,fill:css('--ink')},g);
+      txt(s,x,62,fmt(d[2]),{'text-anchor':'middle','font-size':12,'font-weight':600,'font-family':'Barlow Condensed',fill:css('--ink')});
+    }else{el('circle',{cx:x,cy:34,r:4,fill:css('--paper'),stroke:css('--ink-3'),'stroke-width':1.2},s);
+      txt(s,x,62,d[2]<0?'hoy':'—',{'text-anchor':'middle','font-size':12,'font-family':'Spectral','font-style':'italic',fill:css('--ink-3')})}
+    txt(s,x,76,d[0]+' '+d[1],{'text-anchor':'middle','font-size':11,'letter-spacing':1,'font-family':'Barlow Condensed',fill:css('--ink-2')});
+  });
+})();
+
+// hitos Ruta 5 Sur (km aprox. desde Santiago)
+const HITOS=[['Santiago',0],['Rancagua',87],['San Fernando',140],['Curicó',195],['Talca',255],['Linares',305],['Chillán',400]];
+const KM=297.1;
+
+// ---------- 1 · mini franja ----------
+(function(){
+  const s=document.getElementById('ministrip');const x0=12,x1=338,k=(x1-x0)/400;
+  el('line',{x1:x0,y1:30,x2:x1,y2:30,stroke:css('--ink-3'),'stroke-width':2,'stroke-dasharray':'5 4'},s);
+  el('line',{x1:x0,y1:30,x2:x0+KM*k,y2:30,stroke:css('--route'),'stroke-width':4},s);
+  HITOS.forEach(([n,km],i)=>{const x=x0+km*k;el('circle',{cx:x,cy:30,r:km<=KM?4.5:4,fill:km<=KM?css('--route'):css('--paper'),stroke:css('--ink'),'stroke-width':1.2},s);
+    if(i%2==0||n=='Linares')txt(s,x,i%2?54:16,n,{'text-anchor':i==0?'start':i==HITOS.length-1?'end':'middle','font-size':12.5,'font-style':'italic','font-family':'Spectral',fill:css('--ink')})});
+  txt(s,x0+255*k,54,'Talca',{'text-anchor':'middle','font-size':12.5,'font-style':'italic','font-family':'Spectral',fill:css('--ink'),'font-weight':600});
+  const x=x0+KM*k;el('path',{d:`M${x} 23 l-6 -9 h12z`,fill:css('--ink')},s);
+})();
+
+// ---------- 2 · barra hipsométrica de zonas ----------
+(function(){
+  const s=document.getElementById('zonebar');const x0=4,w=322;
+  // escala 50%..100% FCmáx
+  const lo=50,hi=100,X=p=>x0+(p-lo)/(hi-lo)*w;
+  const Z=[[50,60,'Z1',css('--z1')],[60,70,'Z2',css('--z2')],[70,80,'Z3',css('--z3')],[80,90,'Z4',css('--z4')],[90,100,'Z5',css('--z5')]];
+  Z.forEach(([a,b,n,c])=>{el('rect',{x:X(a),y:18,width:X(b)-X(a),height:22,fill:c,stroke:css('--ink'),'stroke-width':.8},s);
+    txt(s,(X(a)+X(b))/2,33,n,{'text-anchor':'middle','font-size':12,'font-weight':700,'font-family':'Barlow Condensed',fill:n=='Z5'?'#fff':css('--ink')});
+    txt(s,X(a),54,a+' %',{'text-anchor':a==50?'start':'middle','font-size':10.5,'font-family':'Barlow Condensed',fill:css('--ink-2')})});
+  txt(s,X(100),54,'100 %',{'text-anchor':'end','font-size':10.5,'font-family':'Barlow Condensed',fill:css('--ink-2')});
+  // relieve dibujado sobre las zonas
+  let d=`M${x0} 18`;for(let i=0;i<=40;i++){const x=x0+i/40*w;d+=` L${x.toFixed(1)} ${(18-(i/40)*14-Math.sin(i*1.3)*1.5).toFixed(1)}`}
+  el('path',{d:d+` L${x0+w} 18Z`,fill:css('--paper-3'),stroke:css('--contour'),'stroke-width':.8},s);
+  const mx=X(78.7);
+  el('line',{x1:mx,y1:2,x2:mx,y2:44,stroke:css('--route'),'stroke-width':2.5},s);
+  el('circle',{cx:mx,cy:4,r:4,fill:css('--route')},s);
+  txt(s,mx,70,'137 lpm · 79 %',{'text-anchor':'middle','font-size':12.5,'font-weight':700,'font-family':'Barlow Condensed',fill:css('--route')});
+})();
+
+// ---------- 3 · perfil de elevación pasos eq ----------
+(function(){
+  const s=document.getElementById('profile');const L=36,R=344,T=24,B=140;
+  const Y=v=>B-(v-3000)/(7500-3000)*(B-T), X=i=>L+i*(R-L)/(S.length-1);
+  // cotas
+  [4000,5000,6000,7000].forEach(v=>{el('line',{x1:L,y1:Y(v),x2:R,y2:Y(v),stroke:v==7000?css('--route'):css('--contour-2'),'stroke-width':v==7000?1.4:.7,'stroke-dasharray':v==7000?'6 4':'2 3'},s);
+    txt(s,L-4,Y(v)+4,fmt(v),{'text-anchor':'end','font-size':10.5,'font-family':'Barlow Condensed',fill:v==7000?css('--route'):css('--ink-2'),'font-weight':v==7000?700:400})});
+  // relieve con tintes por banda (clip)
+  const pts=S.map((r,i)=>[X(i),Y(r[5])]);
+  let d=`M${L} ${B} `+pts.map(p=>`L${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ')+` L${R} ${B}Z`;
+  const cp=el('clipPath',{id:'cp1'},el('defs',{},s));el('path',{d},cp);
+  const g=el('g',{'clip-path':'url(#cp1)'},s);
+  [[3000,4000,'#d9e6c9'],[4000,5000,'#c9dcb2'],[5000,6000,'#dfe2a6'],[6000,7000,'#e6c586'],[7000,7600,'#cf9a62']].forEach(([a,b,c])=>el('rect',{x:L,y:Y(b),width:R-L,height:Y(a)-Y(b),fill:c},g));
+  // curvas internas (hachura de relieve)
+  for(let v=3500;v<7500;v+=500)el('line',{x1:L,y1:Y(v),x2:R,y2:Y(v),stroke:css('--contour'),'stroke-width':.4,opacity:.6},g);
+  el('path',{d:`M`+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L'),fill:'none',stroke:css('--ink'),'stroke-width':1.6},s);
+  // cumbres ≥ 90 %
+  S.forEach((r,i)=>{if(r[6]>=90){el('path',{d:`M${X(i)-4} ${Y(r[5])-3} L${X(i)} ${Y(r[5])-10} L${X(i)+4} ${Y(r[5])-3}Z`,fill:r[6]>=100?css('--route'):css('--ink')},s)}});
+  txt(s,X(23)-4,Y(7200)-14,'7.200',{'text-anchor':'end','font-size':12,'font-weight':700,'font-family':'Barlow Condensed',fill:css('--route')});
+  txt(s,X(0)+2,Y(4800)-6,'4.800',{'font-size':12,'font-weight':600,'font-family':'Barlow Condensed',fill:css('--ink')});
+  txt(s,L+4,Y(7000)-5,'meta',{'text-anchor':'start','font-size':12,'font-style':'italic','font-family':'Spectral',fill:css('--route')});
+  // eje x
+  [['17 ago',0],['31 ago',8],['14 sep',16],['26 sep',23]].forEach(([l,i])=>txt(s,X(i),B+16,l,{'text-anchor':i==0?'start':i==23?'end':'middle','font-size':11,'font-family':'Barlow Condensed',fill:css('--ink-2')}));
+  el('line',{x1:L,y1:B,x2:R,y2:B,stroke:css('--ink'),'stroke-width':1},s);
+  txt(s,L,B+30,'▲ etapa sobre el 90 % de la meta',{'font-size':11,'font-style':'italic','font-family':'Spectral',fill:css('--ink-2')});
+})();
+
+// ---------- 3 · pulso y eficiencia ----------
+function spark(id,col,lo,hi,H,bands,dotLast,labels){
+  const s=document.getElementById(id);const L=4,R=346,T=8,B=H-16;
+  const Y=v=>B-(v-lo)/(hi-lo)*(B-T),X=i=>L+i*(R-L)/(S.length-1);
+  if(bands)bands.forEach(([a,b,c,n])=>{el('rect',{x:L,y:Y(Math.min(b,hi)),width:R-L,height:Y(Math.max(a,lo))-Y(Math.min(b,hi)),fill:c,opacity:.55},s);
+    txt(s,R-2,n=='Z3'?Y(Math.max(a,lo))-4:Y(Math.min(b,hi))+12,n,{'text-anchor':'end','font-size':11,'font-weight':700,'font-family':'Barlow Condensed',fill:css('--ink-2')})});
+  const vals=S.map(r=>r[col]);
+  // tendencia (mínimos cuadrados)
+  const n=vals.length,mx=(n-1)/2,my=vals.reduce((a,b)=>a+b)/n;
+  let num=0,den=0;vals.forEach((v,i)=>{num+=(i-mx)*(v-my);den+=(i-mx)**2});const m=num/den,b=my-m*mx;
+  el('line',{x1:X(0),y1:Y(b),x2:X(n-1),y2:Y(b+m*(n-1)),stroke:css('--route'),'stroke-width':1.3,'stroke-dasharray':'5 4'},s);
+  el('path',{d:'M'+vals.map((v,i)=>X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(' L'),fill:'none',stroke:css('--ink'),'stroke-width':1.6},s);
+  vals.forEach((v,i)=>el('circle',{cx:X(i),cy:Y(v),r:2,fill:css('--paper'),stroke:css('--ink'),'stroke-width':1},s));
+  el('circle',{cx:X(n-1),cy:Y(vals[n-1]),r:4.5,fill:css('--route')},s);
+  labels.forEach(([i,t,anc])=>txt(s,X(i),H-2,t,{'text-anchor':anc,'font-size':11,'font-family':'Barlow Condensed',fill:css('--ink-2')}));
+}
+spark('hrline',3,132,152,92,[[125,139.2,css('--z3'),'Z3'],[139.2,160,css('--z4'),'Z4']],1,[[0,'146 lpm · 17 ago','start'],[23,'136 lpm · 26 sep','end']]);
+spark('effline',7,2.05,2.7,80,null,1,[[0,'2,17','start'],[23,'2,61 m/latido','end']]);
+
+// ---------- 3 · mapa de la ruta ----------
+(function(){
+  const s=document.getElementById('routemap');const y0=24,y1=372,k=(y1-y0)/400,Y=km=>y0+km*k;
+  // océano
+  const coast=km=>60+Math.sin(km/37)*9+Math.sin(km/13)*3+km*.05;
+  let cd=`M0 0 L${coast(-30)} 0`;for(let km=-30;km<=440;km+=5)cd+=` L${coast(km).toFixed(1)} ${Y(km).toFixed(1)}`;cd+=` L0 400Z`;
+  el('path',{d:cd,fill:css('--water-2')},s);
+  for(let j=1;j<5;j++){let wd='';for(let km=-30;km<=440;km+=5)wd+=(km==-30?'M':'L')+(coast(km)-j*9).toFixed(1)+' '+Y(km).toFixed(1);el('path',{d:wd,fill:'none',stroke:css('--water'),'stroke-width':.6,opacity:.6-j*.1},s)}
+  el('path',{d:cd.replace(/^M0 0 L/,'M').replace(/ L0 400Z$/,''),fill:'none',stroke:css('--water'),'stroke-width':1.2},s);
+  txt(s,18,210,'Océano Pacífico',{'font-size':13,'font-style':'italic','font-family':'Spectral',fill:css('--water'),transform:'rotate(-90 18 210)','text-anchor':'middle','letter-spacing':2});
+  // cordillera: hachuras
+  for(let km=0;km<=400;km+=9){const x=300+Math.sin(km/29)*10,y=Y(km);
+    el('path',{d:`M${x-11} ${y+5} L${x} ${y-6} L${x+11} ${y+5}`,fill:'none',stroke:css('--contour'),'stroke-width':1},s);
+    el('path',{d:`M${x+14} ${y+9} L${x+23} ${y} L${x+32} ${y+9}`,fill:'none',stroke:css('--contour-2'),'stroke-width':.9},s)}
+  txt(s,262,210,'Cordillera de los Andes',{'font-size':12,'font-style':'italic','font-family':'Spectral',fill:css('--contour'),transform:'rotate(-90 262 210)','text-anchor':'middle','letter-spacing':1.5});
+  // ruta
+  const rx=km=>170+Math.sin(km/55)*16;
+  let rd='',rdDone='';for(let km=0;km<=400;km+=4){const p=`${rx(km).toFixed(1)} ${Y(km).toFixed(1)}`;rd+=(km?'L':'M')+p;if(km<=KM)rdDone+=(km?'L':'M')+p}
+  rdDone+=`L${rx(KM).toFixed(1)} ${Y(KM).toFixed(1)}`;
+  el('path',{d:rd,fill:'none',stroke:css('--ink-3'),'stroke-width':2,'stroke-dasharray':'5 4'},s);
+  el('path',{d:rdDone,fill:'none',stroke:css('--route'),'stroke-width':4.5,'stroke-linejoin':'round'},s);
+  HITOS.forEach(([n,km])=>{const x=rx(km),y=Y(km),past=km<=KM;
+    el('rect',{x:x-5,y:y-5,width:10,height:10,fill:past?css('--ink'):css('--paper'),stroke:css('--ink'),'stroke-width':1.3},s);
+    txt(s,x-14,y+5,n,{'text-anchor':'end','font-size':15,'font-style':'italic','font-family':'Spectral','font-weight':past?600:400,fill:past?css('--ink'):css('--ink-2')});
+    txt(s,x+14,y+4,km?'km '+km:'inicio',{'font-size':11.5,'font-family':'Barlow Condensed',fill:css('--ink-2')})});
+  // estás aquí
+  const x=rx(KM),y=Y(KM);
+  el('circle',{cx:x,cy:y,r:11,fill:'none',stroke:css('--route'),'stroke-width':1.5},s);
+  el('circle',{cx:x,cy:y,r:4.5,fill:css('--route')},s);
+  const g=el('g',{},s);el('rect',{x:x+16,y:y-12,width:92,height:22,fill:css('--route')},g);
+  txt(g,x+22,y+3,'297,1 km · tú',{'font-size':13,'font-weight':700,'font-family':'Barlow Condensed',fill:'#fff','letter-spacing':.5});
+  // escala y norte
+  const sc=el('g',{transform:'translate(190,392)'},s);
+  [0,1].forEach(i=>el('rect',{x:i*25*k*2,y:-5,width:50*k,height:4,fill:i?css('--paper'):css('--ink'),stroke:css('--ink'),'stroke-width':.7},sc));
+  txt(sc,0,-8,'0',{'font-size':9.5,'font-family':'Barlow Condensed',fill:css('--ink-2')});txt(sc,100*k,-8,'100 km',{'font-size':9.5,'font-family':'Barlow Condensed',fill:css('--ink-2'),'text-anchor':'middle'});
+  const r=el('g',{transform:'translate(330,16)'},s);el('path',{d:'M0 -10 L3 2 L0 0 L-3 2Z',fill:css('--ink')},r);txt(r,0,14,'N',{'text-anchor':'middle','font-size':10,'font-weight':700,'font-family':'Barlow Condensed',fill:css('--ink')});
+})();
+
+// ---------- 3 · calendario de constancia ----------
+(function(){
+  const s=document.getElementById('calendar');const L=44,T=22,cw=38,ch=29;
+  ['L','M','M','J','V','S','D'].forEach((d,i)=>txt(s,L+i*cw+cw/2,12,d,{'text-anchor':'middle','font-size':11,'font-weight':700,'letter-spacing':1,'font-family':'Barlow Condensed',fill:css('--ink-2')}));
+  const start=new Date('2026-08-17T12:00:00');const map={};S.forEach(r=>map[r[0]]=r);
+  for(let w=0;w<6;w++){
+    const d0=new Date(start.getTime()+w*7*864e5);
+    txt(s,L-8,T+w*ch+19,d0.getDate()+'/'+(d0.getMonth()+1),{'text-anchor':'end','font-size':10.5,'font-family':'Barlow Condensed',fill:css('--ink-3')});
+    for(let i=0;i<7;i++){const dt=new Date(d0.getTime()+i*864e5);const key=dt.toISOString().slice(0,10);const r=map[key];
+      const x=L+i*cw,y=T+w*ch;
+      el('rect',{x:x+1,y:y+1,width:cw-2,height:ch-2,fill:r?(r[6]>=90?'#e6c586':r[6]>=75?'#dfe2a6':'#d9e6c9'):css('--paper-2'),stroke:css('--paper'),'stroke-width':1},s);
+      if(r){el('path',{d:`M${x+cw/2-6} ${y+ch-8} L${x+cw/2} ${y+7} L${x+cw/2+6} ${y+ch-8}Z`,fill:r[6]>=100?css('--route'):css('--ink')},s)}
+    }
+    // bandera de semana cumplida
+    const fx=L+7*cw+12,fy=T+w*ch+4;
+    el('line',{x1:fx,y1:fy,x2:fx,y2:fy+21,stroke:css('--ink'),'stroke-width':1.2},s);
+    el('path',{d:`M${fx} ${fy} L${fx+13} ${fy+4} L${fx} ${fy+9}Z`,fill:css('--forest')},s);
+  }
+  txt(s,L,T+6*ch+14,'▲ sesión   ',{'font-size':11,'font-family':'Barlow Condensed',fill:css('--ink-2')});
+  const lg=[['#d9e6c9','<75 %'],['#dfe2a6','75–89 %'],['#e6c586','≥90 %']];
+  lg.forEach(([c,t],i)=>{el('rect',{x:L+62+i*72,y:T+6*ch+5,width:11,height:11,fill:c,stroke:css('--ink-3'),'stroke-width':.6},s);txt(s,L+77+i*72,T+6*ch+14,t,{'font-size':11,'font-family':'Barlow Condensed',fill:css('--ink-2')})});
+  el('path',{d:`M${L+7*cw+12} ${T+6*ch+4} l0 12 M${L+7*cw+12} ${T+6*ch+4} l10 3.5 l-10 3.5`,stroke:css('--ink'),fill:css('--forest'),'stroke-width':1},s);
+})();
+
+// ---------- 3 · tiempo por zona ----------
+(function(){
+  const s=document.getElementById('zones');let z3=0,z4=0;S.forEach(r=>{if(r[4]==3)z3+=r[1];else z4+=r[1]});const tot=z3+z4;
+  const W=346,x0=2;const w3=W*z3/tot;
+  el('rect',{x:x0,y:6,width:w3,height:24,fill:css('--z3'),stroke:css('--ink'),'stroke-width':.8},s);
+  el('rect',{x:x0+w3,y:6,width:W-w3,height:24,fill:css('--z4'),stroke:css('--ink'),'stroke-width':.8},s);
+  txt(s,x0+8,23,`Z3 · ${z3} min · ${Math.round(z3/tot*100)} %`,{'font-size':13,'font-weight':700,'font-family':'Barlow Condensed',fill:css('--ink')});
+  txt(s,x0+W-8,23,`Z4 · ${z4} min · ${Math.round(z4/tot*100)} %`,{'text-anchor':'end','font-size':13,'font-weight':700,'font-family':'Barlow Condensed',fill:css('--ink')});
+  txt(s,x0,50,'Desde el 12 sep: 7 de 9 etapas en Z3, tu zona objetivo.',{'font-size':13,'font-style':'italic','font-family':'Spectral',fill:css('--ink-2')});
+})();
+
+// ---------- 4 · corte del terreno con los 3 planes ----------
+(function(){
+  const s=document.getElementById('section');
+  const ground='M0 186 L0 136 C 30 134, 70 138, 104 132 C 120 128, 126 104, 140 100 C 170 94, 200 102, 222 96 C 238 90, 246 48, 262 40 C 280 30, 300 26, 316 18 L 332 14 L350 26 L350 186Z';
+  el('path',{d:ground,fill:css('--paper-2'),stroke:'none'},s);
+  // estratos
+  const cp=el('clipPath',{id:'cp2'},el('defs',{},s));el('path',{d:ground},cp);
+  const g=el('g',{'clip-path':'url(#cp2)'},s);
+  el('rect',{x:0,y:0,width:112,height:190,fill:css('--z1')},g);
+  el('rect',{x:112,y:0,width:122,height:190,fill:css('--z3')},g);
+  el('rect',{x:234,y:0,width:116,height:190,fill:css('--z5'),opacity:.85},g);
+  for(let y=110;y<190;y+=8)el('line',{x1:0,y1:y,x2:350,y2:y+4,stroke:css('--ink'),'stroke-width':.4,opacity:.35},g);
+  el('path',{d:'M316 18 L332 14 L350 26 L341 30 L330 24 L322 28Z',fill:'#fbfaf5',stroke:css('--ink'),'stroke-width':.6},s);
+  el('path',{d:ground.replace(/ L350 186Z$/,'').replace(/^M0 186 /,'M'),fill:'none',stroke:css('--ink'),'stroke-width':1.6},s);
+  const lab=(x,y,a,b,c,col)=>{txt(s,x,y,a,{'font-size':13,'font-weight':800,'letter-spacing':1.5,'font-family':'Barlow Condensed',fill:col||css('--ink')});
+    txt(s,x,y+14,b,{'font-size':12.5,'font-style':'italic','font-family':'Spectral',fill:col||css('--ink-2')});
+    txt(s,x,y+30,c,{'font-size':15,'font-weight':800,'font-family':'Barlow Condensed',fill:col||css('--ink')})};
+  lab(10,150,'PRINCIPIANTE','Valle','4.000');
+  lab(122,126,'MEDIO','Precordillera','7.000');
+  lab(244,76,'AVANZADO','Cordillera','10.000 tope','#fff');
+  // estás aquí
+  const px=180,py=99;
+  el('line',{x1:px,y1:py,x2:px,y2:py-40,stroke:css('--ink'),'stroke-width':1.4},s);
+  el('path',{d:`M${px} ${py-40} L${px+18} ${py-35} L${px} ${py-29}Z`,fill:css('--route')},s);
+  txt(s,px-6,py-44,'estás aquí',{'text-anchor':'end','font-size':13,'font-style':'italic','font-family':'Spectral',fill:css('--route'),'font-weight':600});
+  // paso abierto
+  el('path',{d:`M${px+26} ${py-24} C 220 60, 236 40, 258 24`,fill:'none',stroke:css('--forest'),'stroke-width':2,'stroke-dasharray':'5 4'},s);
+  el('path',{d:'M258 24 l-9 1 l5 7Z',fill:css('--forest')},s);
+  txt(s,168,20,'paso abierto',{'font-size':13,'font-style':'italic','font-family':'Spectral','font-weight':600,fill:css('--forest')});
+})();
+
+// ---------- 4 · evidencias ----------
+(function(){
+  const s=document.getElementById('dots');S.slice(-10).forEach((r,i)=>{const ok=r[6]>=90;const x=6+i*10.8;
+    el('path',{d:`M${x-4.5} 17 L${x} 5 L${x+4.5} 17Z`,fill:ok?css('--forest'):css('--paper'),stroke:ok?css('--ink'):css('--ink-3'),'stroke-width':1},s)});
+  function mini(id,col,up){const s=document.getElementById(id);const v=S.map(r=>r[col]);const lo=Math.min(...v),hi=Math.max(...v);
+    const X=i=>4+i*102/(v.length-1),Y=x=>26-(x-lo)/(hi-lo)*22;
+    el('path',{d:'M'+v.map((x,i)=>X(i).toFixed(1)+' '+Y(x).toFixed(1)).join(' L'),fill:'none',stroke:css('--ink'),'stroke-width':1.3},s);
+    el('circle',{cx:X(v.length-1),cy:Y(v[v.length-1]),r:3.2,fill:css('--forest')},s)}
+  mini('sp1',3);mini('sp2',7);
+})();
+
+// ---------- 5 · quema de grasa ----------
+// bloques: [min, zona, rótulo]  (zona 1..4; 3.5 = Z3 alto)
+const LV=[
+  [[5,1],[20,2],[5,1]],
+  [[5,1],[5,2],[3,3.5],[5,2],[3,3.5],[5,2],[3,3.5],[4,2],[5,1]],
+  [[8,1],...Array.from({length:6},()=>[[2,4],[2,2]]).flat(),[8,2],[5,1]]];
+const ZC={1:'--z1',2:'--z2',3:'--z3',3.5:'--z3',4:'--z4'};
+function sessionProfile(s,blocks,W,H,x0,maxMin,done){
+  const base=H-4,u=(H-12)/4,X=m=>x0+m/maxMin*W;let t=0,d=`M${X(0)} ${base}`;
+  blocks.forEach(([m,z],i)=>{const x=X(t),x2=X(t+m),y=base-z*u;
+    const r=el('rect',{x,y,width:x2-x,height:base-y,fill:css(ZC[z]),stroke:css('--paper'),'stroke-width':.6},s);
+    if(done!=null&&t+m<=done)r.setAttribute('opacity','.5');
+    d+=` L${x} ${y} L${x2} ${y}`;t+=m});
+  el('path',{d:d+` L${X(t)} ${base}`,fill:'none',stroke:css('--ink'),'stroke-width':1.3,'stroke-linejoin':'round'},s);
+  el('line',{x1:X(0),y1:base,x2:X(t),y2:base,stroke:css('--ink'),'stroke-width':1},s);
+  return {X,base,u,total:t};
+}
+document.querySelectorAll('.sprof').forEach(s=>{const lv=+s.dataset.lv;const p=sessionProfile(s,LV[lv],318,58,4,45);
+});
+(function(){const s=document.getElementById('proflegend');
+  [['Z1 calma','--z1'],['Z2 fondo','--z2'],['Z3 alto','--z3'],['Z4 intervalo','--z4']].forEach(([t,c],i)=>{
+    el('rect',{x:2+i*86,y:5,width:12,height:12,fill:css(c),stroke:css('--ink-3'),'stroke-width':.6},s);
+    txt(s,18+i*86,15,t,{'font-size':11.5,'font-family':'Barlow Condensed',fill:css('--ink-2')})});
+})();
+// perfil en modo guiado (Oleadas) con posición actual
+(function(){const s=document.getElementById('guideprof');
+  // fondo oscuro: redefinir tintes sobre tinta
+  const blocks=LV[1],W=322,H=62,x0=4,maxMin=38,base=H-2,u=(H-10)/4,X=m=>x0+m/maxMin*W;let t=0,d=`M${X(0)} ${base}`;
+  const now=11.2;
+  blocks.forEach(([m,z])=>{const x=X(t),x2=X(t+m),y=base-z*u;
+    el('rect',{x,y,width:x2-x,height:base-y,fill:css(ZC[z]),opacity:t+m<=now?.35:1},s);d+=` L${x} ${y} L${x2} ${y}`;t+=m});
+  el('path',{d:d+` L${X(t)} ${base}`,fill:'none',stroke:css('--paper'),'stroke-width':1.2},s);
+  const x=X(now),y=base-3.5*u;
+  el('line',{x1:x,y1:y-8,x2:x,y2:base,stroke:css('--route'),'stroke-width':2.2},s);
+  el('circle',{cx:x,cy:y-8,r:5,fill:css('--route'),stroke:css('--paper'),'stroke-width':1.5},s);
+  txt(s,X(0),H+12,'0′',{'font-size':11,'font-family':'Barlow Condensed',fill:css('--paper-3')});
+  txt(s,X(38),H+12,'38′',{'text-anchor':'end','font-size':11,'font-family':'Barlow Condensed',fill:css('--paper-3')});
+  txt(s,x+8,H+12,'tú · 11:12',{'font-size':11,'font-weight':700,'font-family':'Barlow Condensed',fill:css('--route')});
+  s.setAttribute('viewBox','0 0 330 '+(H+16));
+})();
+// medidor de pulso (bandas lpm de Tomás)
+(function(){const s=document.getElementById('gauge');const lo=95,hi=160,x0=4,w=322,X=v=>x0+(v-lo)/(hi-lo)*w;
+  [[95,104,'--z1','Z1'],[104,122,'--z2','Z2'],[122,139,'--z3','Z3'],[139,157,'--z4','Z4'],[157,160,'--z5','']].forEach(([a,b,c,n])=>{
+    el('rect',{x:X(a),y:16,width:X(b)-X(a),height:14,fill:css(c),opacity:.9},s);
+    if(n)txt(s,n=='Z3'?X(126.5):(X(a)+X(b))/2,27,n,{'text-anchor':'middle','font-size':10.5,'font-weight':700,'font-family':'Barlow Condensed',fill:css('--ink')})});
+  // objetivo
+  el('rect',{x:X(131),y:12,width:X(139)-X(131),height:22,fill:'none',stroke:css('--paper'),'stroke-width':2},s);
+  [104,122,139,157].forEach(v=>txt(s,X(v),46,v,{'text-anchor':'middle','font-size':10.5,'font-family':'Barlow Condensed',fill:css('--paper-3')}));
+  const x=X(134);el('path',{d:`M${x} 12 l-6 -9 h12z`,fill:css('--route'),stroke:css('--paper'),'stroke-width':1},s);
+  txt(s,x-10,9,'134 lpm',{'text-anchor':'end','font-size':13,'font-weight':800,'font-family':'Barlow Condensed',fill:css('--paper')});
+  txt(s,X(135),57,'en rango ✓',{'text-anchor':'middle','font-size':11.5,'font-style':'italic','font-family':'Spectral',fill:css('--z2')});
+})();
+// avance del nivel: 8 hitos
+(function(){const s=document.getElementById('lvdots');
+  el('line',{x1:18,y1:20,x2:332,y2:20,stroke:css('--ink-3'),'stroke-width':1.5,'stroke-dasharray':'4 4'},s);
+  el('line',{x1:18,y1:20,x2:18+4*(314/7),y2:20,stroke:css('--route'),'stroke-width':3},s);
+  for(let i=0;i<8;i++){const x=18+i*314/7,ok=i<5;
+    el('path',{d:`M${x-9} 28 L${x} 11 L${x+9} 28Z`,fill:ok?css('--forest'):css('--paper'),stroke:ok?css('--ink'):css('--ink-3'),'stroke-width':1.2},s);
+    txt(s,x,39,i+1,{'text-anchor':'middle','font-size':10.5,'font-family':'Barlow Condensed',fill:css('--ink-2')})}
+  const x=18+7*314/7;el('path',{d:`M${x} 11 l0 -10 l10 3 l-10 3`,fill:css('--route'),stroke:css('--ink'),'stroke-width':.8},s);
+})();
+// peso: descenso con media móvil
+(function(){const s=document.getElementById('weight');
+  const W=[['17 ago',91.4],['24 ago',91.0],['31 ago',90.5],['7 sep',90.3],['14 sep',89.6],['21 sep',89.3],['27 sep',89.0]];
+  const L=34,R=340,T=14,B=118,lo=88.5,hi=92,Y=v=>B-(v-lo)/(hi-lo)*(B-T),X=i=>L+i*(R-L)/(W.length-1);
+  [89,90,91].forEach(v=>{el('line',{x1:L,y1:Y(v),x2:R,y2:Y(v),stroke:css('--contour-2'),'stroke-width':.7,'stroke-dasharray':'2 3'},s);
+    txt(s,L-5,Y(v)+4,v,{'text-anchor':'end','font-size':10.5,'font-family':'Barlow Condensed',fill:css('--ink-2')})});
+  // ladera: área bajo la curva como terreno que desciende
+  const pts=W.map((w,i)=>[X(i),Y(w[1])]);
+  el('path',{d:`M${L} ${B} `+pts.map(p=>`L${p[0]} ${p[1].toFixed(1)}`).join(' ')+` L${R} ${B}Z`,fill:css('--forest-2'),opacity:.55},s);
+  for(let k=1;k<6;k++)el('path',{d:'M'+pts.map(p=>`${p[0]} ${Math.min(B,p[1]+k*12).toFixed(1)}`).join(' L'),fill:'none',stroke:css('--forest'),'stroke-width':.5,opacity:.5,'clip-path':''},s);
+  // media móvil 3
+  const ma=W.map((w,i)=>{const a=W.slice(Math.max(0,i-1),i+2).map(x=>x[1]);return a.reduce((p,c)=>p+c)/a.length});
+  el('path',{d:'M'+ma.map((v,i)=>`${X(i)} ${Y(v).toFixed(1)}`).join(' L'),fill:'none',stroke:css('--route'),'stroke-width':1.6,'stroke-dasharray':'6 4'},s);
+  el('path',{d:'M'+pts.map(p=>`${p[0]} ${p[1].toFixed(1)}`).join(' L'),fill:'none',stroke:css('--ink'),'stroke-width':1.8},s);
+  W.forEach((w,i)=>{el('circle',{cx:X(i),cy:Y(w[1]),r:i==W.length-1?4.5:2.8,fill:i==W.length-1?css('--route'):css('--paper'),stroke:css('--ink'),'stroke-width':1.1},s);
+    if(i%2==0||i==W.length-1)txt(s,X(i),B+15,w[0],{'text-anchor':i==0?'start':i==W.length-1?'end':'middle','font-size':11,'font-family':'Barlow Condensed',fill:css('--ink-2')})});
+  el('line',{x1:L,y1:B,x2:R,y2:B,stroke:css('--ink'),'stroke-width':1},s);
+  txt(s,X(0)+6,Y(91.4)-6,'91,4',{'font-size':12,'font-weight':700,'font-family':'Barlow Condensed',fill:css('--ink')});
+  txt(s,X(6)-8,Y(89.0)-8,'89,0',{'text-anchor':'end','font-size':12,'font-weight':700,'font-family':'Barlow Condensed',fill:css('--route')});
+  txt(s,L,B+30,'— peso   - - media móvil (3 semanas)',{'font-size':11,'font-style':'italic','font-family':'Spectral',fill:css('--ink-2')});
+  s.setAttribute('viewBox','0 0 350 152');
+})();
+
+// ---------- barras de pestañas ----------
+document.querySelectorAll('.tabbar').forEach(n=>{const on=+n.dataset.on;
+  const ic=[
+    '<path d="M3 21 L11 8 L15 14 L18 10 L23 21Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',
+    '<rect x="3" y="3" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M13 8v10M8 13h10" stroke="currentColor" stroke-width="2"/>',
+    '<path d="M3 13c3-7 7-9 10-9s7 3 10 9M6 16c2-4 4-6 7-6s5 2 7 6M10 19c1-2 2-3 3-3s2 1 3 3" fill="none" stroke="currentColor" stroke-width="1.6"/>',
+    '<path d="M13 23c-5 0-8-3-8-7 0-5 5-7 5-12 3 2 4 5 4 7 1-1 2-2 2-4 3 3 5 6 5 9 0 4-3 7-8 7z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>',
+    '<path d="M7 23V3M7 4l13 4-13 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'];
+  n.innerHTML=['Hoy','Registrar','Progreso','Quema','Plan'].map((t,i)=>`<a class="${i==on?'on':''}"><svg viewBox="0 0 26 26">${ic[i]}</svg>${t}</a>`).join('')});
+</script>
+</body>
+</html>

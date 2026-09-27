@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>msefitness · 6 direcciones</title>
+<link rel="stylesheet" href="fonts/archivo.css">
+<style>
+  :root { --ink:#111; --paper:#f4f4f2; --line:#d8d8d4; --muted:#666; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--paper); color:var(--ink); font-family:'Archivo',system-ui,sans-serif; padding:48px 16px 64px; }
+  .wrap { max-width:1240px; margin:0 auto; }
+  h1 { font-size:clamp(40px,8vw,96px); font-stretch:70%; font-weight:850; line-height:.9; letter-spacing:-.02em; }
+  .lead { max-width:640px; margin:20px 0 40px; font-size:17px; line-height:1.45; color:#333; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:32px 24px; }
+  @media (max-width:420px){ .grid { grid-template-columns:1fr; } }
+  a.card { color:inherit; text-decoration:none; display:block; }
+  .thumb { aspect-ratio:9/10; overflow:hidden; border:1px solid var(--line); background:#fff; }
+  .thumb img { width:100%; display:block; transition:transform .5s ease; }
+  a.card:hover .thumb img { transform:translateY(-8%); }
+  .meta { display:flex; gap:14px; align-items:baseline; padding-top:12px; border-top:3px solid var(--ink); margin-top:12px; }
+  .n { font-size:40px; font-stretch:62%; font-weight:800; line-height:1; }
+  .t { font-size:22px; font-stretch:80%; font-weight:750; }
+  .c { font-size:14px; color:var(--muted); line-height:1.4; margin-top:4px; }
+  footer { margin-top:48px; font-size:13px; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>msefitness<br>6 direcciones</h1>
+  <p class="lead">Seis formas de ver el mismo entrenamiento: tus 24 sesiones, el plan Medio, la sugerencia de subir a Avanzado y la quema de grasa guiada. Cada lámina muestra 5 pantallas; ábrela también desde el teléfono para ver la versión a pantalla completa.</p>
+  <div class="grid">
+    <a class="card" href="direccion-tablero.html"><div class="thumb"><img src="capturas/tablero-desk.png" alt="Lámina Tablero"></div>
+      <div class="meta"><span class="n">1</span><div><div class="t">Tablero</div><div class="c">Cuadro de instrumentos de gran turismo: tacómetro de pasos, odómetro de km, cambio de nivel = cambio de marcha.</div></div></div></a>
+    <a class="card" href="direccion-grilla-suiza.html"><div class="thumb"><img src="capturas/grilla-suiza-desk.png" alt="Lámina Grilla suiza"></div>
+      <div class="meta"><span class="n">2</span><div><div class="t">Grilla suiza</div><div class="c">El número manda: blanco, negro y un rojo; cifras gigantes y gráficos de rectángulos puros.</div></div></div></a>
+    <a class="card" href="direccion-travesia.html"><div class="thumb"><img src="capturas/travesia-desk.png" alt="Lámina Travesía"></div>
+      <div class="meta"><span class="n">3</span><div><div class="t">Travesía</div><div class="c">Cada sesión es un mapa: la meta es una cumbre y los km acumulados avanzan por la Ruta 5 Sur.</div></div></div></a>
+    <a class="card" href="direccion-riso-club.html"><div class="thumb"><img src="capturas/riso-club-desk.png" alt="Lámina Riso club"></div>
+      <div class="meta"><span class="n">4</span><div><div class="t">Riso club</div><div class="c">Fanzine del club a dos tintas (rosa y azul), tramas de medio tono y sellos en vez de checks.</div></div></div></a>
+    <a class="card" href="direccion-maillot.html"><div class="thumb"><img src="capturas/maillot-desk.png" alt="Lámina Maillot"></div>
+      <div class="meta"><span class="n">5</span><div><div class="t">Maillot</div><div class="c">Cada nivel es un maillot de gran vuelta; cada sesión una etapa; subir es ganarse el amarillo.</div></div></div></a>
+    <a class="card" href="direccion-lcd.html"><div class="thumb"><img src="capturas/lcd-desk.png" alt="Lámina LCD"></div>
+      <div class="meta"><span class="n">6</span><div><div class="t">Ciclocomputador LCD</div><div class="c">Pulsómetro de los 90: dígitos de 7 segmentos, barras de píxeles y botones de goma.</div></div></div></a>
+  </div>
+  <footer>Brief y reglas de cálculo: SPEC.md · 27-sep-2026</footer>
+</div>
+</body>
+</html>
