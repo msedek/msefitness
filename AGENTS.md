@@ -41,7 +41,7 @@ ssh msenas 'cd ~/projects/msefitness && docker compose up -d --build'
 ```
 
 - `.env` vive solo en msenas (ver `.env.example`): `ALLOWED_EMAILS`, `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`.
-- Cloudflare: la app de Access `msefitness.msecloud.cl` usa solo Google, `auto_redirect_to_identity` y 730 h,
+- Cloudflare: la app de Access `msefitness.msecloud.cl` usa solo Google, `auto_redirect_to_identity` y sesión de 8760 h (1 año; el panel solo ofrece hasta 30 días, la API acepta más),
   con apps bypass para `manifest.webmanifest`, `sw.js`, `registerSW.js`, `workbox-*` e `icons/`.
   El tunnel es remote-managed: se edita por API (GET→append→PUT), nunca `/etc/cloudflared/config.yml`.
 - `/api/health` responde sin auth (Uptime Kuma por la red docker).
