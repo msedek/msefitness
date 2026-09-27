@@ -1,0 +1,12 @@
+services:
+  msefitness:
+    build: .
+    image: msefitness:latest
+    container_name: msefitness
+    restart: unless-stopped
+    # Solo localhost: entra únicamente por el tunnel de Cloudflare (Access delante).
+    ports:
+      - "127.0.0.1:3990:3990"
+    env_file: .env
+    volumes:
+      - ./data:/app/data
