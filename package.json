@@ -2,6 +2,9 @@
   "name": "msefitness",
   "private": true,
   "version": "0.1.0",
+  "description": "PWA de registro y control de entrenamiento en bicicleta estacionaria",
+  "author": "msedek (https://github.com/msedek)",
+  "license": "UNLICENSED",
   "type": "module",
   "engines": {
     "node": ">=24"
